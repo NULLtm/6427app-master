@@ -1,0 +1,4 @@
+#Fri Dec 07 12:14:36 PST 2018
+base.0=/Users/owenboseley/Desktop/ftc_app-master/TeamCode/build/intermediates/transforms/dexMerger/debug/7
+path.0=classes.dex
+renamed.0=classes.dex
