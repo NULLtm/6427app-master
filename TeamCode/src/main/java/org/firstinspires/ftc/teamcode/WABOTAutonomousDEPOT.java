@@ -35,6 +35,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 @Autonomous(name="WABOTAutonomousDEPOT", group="WABOT")
 public class WABOTAutonomousDEPOT extends LinearOpMode {
 
+    // variable set up here!
+
     DcMotor FLMotor;
     DcMotor FRMotor;
     DcMotor BLMotor;
@@ -49,6 +51,8 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
     DistanceSensor ods;
     ColorSensor color1;
     BNO055IMU imu;
+
+    float globalAngle = 0;
 
     Orientation angles;
 
@@ -96,7 +100,6 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
 
         markerServo = hardwareMap.get(CRServo.class, "markerServo");
         ods = hardwareMap.get(DistanceSensor.class, "ods");
-        //color1 = hardwareMap.get(ColorSensor.class, "color1");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
 
@@ -152,34 +155,30 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         telemetry.addLine("Vuforia and Tensorflow Complete");
         telemetry.update();
 
+        telemetry.addLine("Calibrating Gyro...");
+        telemetry.update();
+
+        while(!imu.isGyroCalibrated()){ }
+
         if (tfod != null) {
             tfod.activate();
         }
-
-        //telemetry.addLine("Starting up Color1!");
-        //telemetry.update();
-
-        //color1.enableLed(true);
 
         telemetry.addLine("Init Complete! Ready to Go!");
         telemetry.update();
 
         waitForStart();
 
-        //turnByDegree(180, 0.5f);
-
-
-
-
-
+        // First, detect any minerals and drive forward
 
         int gPos = runTFod();
 
         runToPos(2, 0.5f);
 
+        // depending on where the gold is, drive to that
         if(gPos == -1){
             runToPos(4, 0.5f);
-            turnByDegree(90, -0.5f);
+            turnByDegree(-90, 0.5f);
         } else if (gPos == 1) {
             strafe(1, 50);
             sleep(800);
@@ -189,95 +188,38 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
             runToPos(2, 0.5f);
         } else {
             strafe(-1, 50);
-            sleep(1100);
+            sleep(1000);
             stopMotors();
             runToPos(2, 0.5f);
-            turnByDegree(90, 0.5f);
-            sleep(500);
-            turnByDegree(90, 0.5f);
-            sleep(500);
-            turnByDegree(90, 0.5f);
-            sleep(500);
-            turnByDegree(45, 0.5f);
+            turnByDegree(-45, 0.5f);
             sleep(500);
             stopMotors();
             runToPos(2, 0.5f);
         }
 
-        //sleep(600);
+        // After being in the depot, dispense the marker
 
-        //turnByDegree(45, -0.5f);
-
-        //sleep(250);
-
-        //runToPos(4, 0.5f);
-
-        /*linearDrive(-25f);
-        sleep(1000);
-        stopMotors();
-        strafe(-1, 50);
-        sleep(2500);
-        stopMotors();
-        turnByDegree(45, 50);*/
-
-        //runToPos(2, -50);
-        /*strafe(-1, 100);
-        // TEST!
-        sleep(1000);
-        stopMotors();
-        turnByDegree(45, 50);
-        // ALSO TEST (revs)!
-        runToPos(5, 50);
         markerServo.setPower(1f);
-        sleep(1100);
+
+        sleep(1000);
+
         markerServo.setPower(0f);
-        turnByDegree(90, 50);
-        runToPos(10, 100);*/
 
-        /*
-        // THIS WORKS! // DO NOT DELETE //
-        int gPos = runTFod();
+        // Turn towards the crater, and drive straight towards it
 
-        runToPos(2, 50);
+        turnByDegree(-45, 0.5f);
 
-        if(gPos == -1){
-            runToPos(4, 50);
-            turnByDegree(45, 50);
-        } else if (gPos == 1) {
-            strafe(1, 50);
-            sleep(800);
-            stopMotors();
-            runToPos((int)3.5, 50);
-            turnByDegree(45, -50);
-            runToPos(2, 50);
-        } else {
-            strafe(-1, 50);
-            sleep(1100);
-            stopMotors();
-            runToPos((int)2.5, 50);
-            turnByDegree(45, 50);
-            sleep(500);
-            stopMotors();
-            runToPos(2, 50);
-        }
-        sleep(250);
-        markerServo.setPower(1f);
-        sleep(1100);
-        markerServo.setPower(0f);
-        sleep(250);
-        //runEncoder(10, -50);*/
+        runToPos(10, 1);
     }
 
+    // Updates the current heading value for our imu
     private float getHeading(){
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        //float heading = angles.firstAngle*-1;
-        //if(heading < 0){
-        //    heading += 360;
-        //}
 
         return angles.firstAngle;
     }
 
+    // Updates gold position using tensor flow
     private int runTFod(){
         if (tfod != null) {
             updatedRecognitions = tfod.getUpdatedRecognitions();
@@ -314,8 +256,9 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         return 10;
     }
 
-    private void runToPos(int revolution, float power){
-        int ticksToRun = revolution * ENCODER_TICK;
+    // Uses encoders to move a specific distance away
+    private void runToPos(float revolution, float power){
+        int ticksToRun = Math.round(revolution * ENCODER_TICK);
         runEncoder(true);
         resetEncoder();
         FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -334,6 +277,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         runEncoder(false);
     }
 
+    // Set's encoder values to zero
     private void resetEncoder(){
         FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -341,6 +285,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         BRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
+    // Switch between non-encoder and encoder modes of the motors
     private void runEncoder(boolean withEncoder){
         if(withEncoder) {
             FLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -356,6 +301,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
 
     }
 
+    // [DEPRECATED] A flexible form of driving
     private void dynamicDrive(double angle, double power, double aTurn) {
         double r = power;
         double robotAngle = (angle % 360 - 45) * Math.PI / 180;
@@ -418,26 +364,37 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
     }
 
     private void turnByDegree (int degree, float power) {
+
+        // find new angle to rotate to
+        float turnTo = degree + getHeading();
+
+        // convert new angle into our "gyro"'s scope
+        if(turnTo >= 180){
+            turnTo = -180-(turnTo-180);
+        } else if(turnTo <= -180){
+            turnTo = 180+(Math.abs(turnTo-180));
+        }
+
+
         runEncoder(true);
 
-        float degreeTurn = degree + getHeading();
+        // if to the right, turn right, vise versa
+        if(getHeading() < turnTo){
 
-        if(degreeTurn < getHeading()){
-
-            FLMotor.setPower(power);
-            FRMotor.setPower(-power);
-            BLMotor.setPower(power);
-            BRMotor.setPower(-power);
-
-            while(getHeading() > degreeTurn){
-            }
-        } else if (degreeTurn > getHeading()){
             FLMotor.setPower(-power);
             FRMotor.setPower(power);
             BLMotor.setPower(-power);
             BRMotor.setPower(power);
 
-            while(getHeading() < degreeTurn){
+            while(getHeading() < turnTo){
+            }
+        } else if (getHeading() > turnTo){
+            FLMotor.setPower(power);
+            FRMotor.setPower(-power);
+            BLMotor.setPower(power);
+            BRMotor.setPower(-power);
+
+            while(getHeading() > turnTo){
             }
         }
 
