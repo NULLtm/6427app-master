@@ -36,7 +36,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 public class WABOTAutonomousDEPOT extends LinearOpMode {
 
     // variable set up here!
-
     DcMotor FLMotor;
     DcMotor FRMotor;
     DcMotor BLMotor;
@@ -52,20 +51,12 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
     ColorSensor color1;
     BNO055IMU imu;
 
-    float globalAngle = 0;
-
     Orientation angles;
 
     // This provides the tick count for each rotation of an encoder, it's helpful for using run to position
     private final int ENCODER_TICK = 1440;
 
-    // This value is the distance of 1 rev of the wheels measured in CM!!!!
-    private final int LINEAR_TO_ANGULAR = 10;
-
     private final String VUFORIA_KEY = "AQc7P77/////AAAAGRkj9xpwbUV3lGEfqxdnuDCJ/2Rml7cEF7R7SqndRsU6cegdDxLs9sSsk8x5AqituFBD6dCrCZFJB/P4+tc3O3uooja7zTjZ+knDbMYmJq7t35B0ZSRUp84N0e7bkiDq+rGvM7qWl7rOMCJL0tN8CPXDL843WleEAUrvMl0Ba5jnAz8ZX4UTpk+/8e3Hz1F4s/F7/VjkJejp9JbPDEYdvwMOwwFedcAumO+NTZfe5mWqFY2MBBwLJi6h6SZ1g4a7qWThAorw0G0AZK0WiIWYiQVzPLaKTiq8jEKAY9lxSFon02LXkGtaLi6X5krlNiiacNQcSYSj9Y+6oxCUGH0zUvBZgpbG5tKQJqzyovqqP5UT";
-    private final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = FRONT;
-
-    public String side = "start";
 
     VuforiaLocalizer vuforia;
     VuforiaLocalizer.Parameters parameters;
@@ -129,7 +120,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
@@ -169,47 +160,58 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
 
         waitForStart();
 
-        // First, detect any minerals and drive forward
+        // Our auto while loop body
+        while(opModeIsActive()){
+            // First, detect any minerals and drive forward
 
-        int gPos = runTFod();
+            int gPos = runTFod();
 
-        runToPos(2, 0.5f);
-
-        // depending on where the gold is, drive to that
-        if(gPos == -1){
-            runToPos(4, 0.5f);
-            turnByDegree(-90, 0.5f);
-        } else if (gPos == 1) {
-            strafe(1, 50);
-            sleep(800);
-            stopMotors();
-            runToPos((int)3.5, 0.5f);
-            turnByDegree(45, 0.5f);
             runToPos(2, 0.5f);
-        } else {
-            strafe(-1, 50);
-            sleep(1000);
-            stopMotors();
-            runToPos(2, 0.5f);
-            turnByDegree(-45, 0.5f);
-            sleep(500);
-            stopMotors();
-            runToPos(2, 0.5f);
-        }
 
-        // After being in the depot, dispense the marker
+            // depending on where the gold is, drive to that
+            if(gPos == -1){
+                runToPos(4, 0.5f);
+                turnByDegree(-45, 0.5f);
+                turnByDegree(135, 0.5f);
+                sleep(500);
+                runToPos(10, 0.5f);
+            } else if (gPos == 1) {
+                strafe(1, 50);
+                sleep(900);
+                stopMotors();
+                runToPos(3.5f, 0.5f);
+                turnByDegree(45, 0.5f);
+                runToPos(1.5f, 0.5f);
+                turnByDegree(-90, 0.5f);
+            } else {
+                strafe(-1, 50);
+                sleep(1000);
+                stopMotors();
+                runToPos(2, 0.5f);
+                turnByDegree(-45, 0.5f);
+                sleep(500);
+                stopMotors();
+                runToPos(2, 0.5f);
+                turnByDegree(-45, 0.5f);
+            }
 
-        markerServo.setPower(1f);
+            // After being in the depot, dispense the marker
 
-        sleep(1000);
+            //markerServo.setPower(1f);
 
-        markerServo.setPower(0f);
+            //sleep(1000);
 
-        // Turn towards the crater, and drive straight towards it
+            //markerServo.setPower(0f);
 
-        turnByDegree(-45, 0.5f);
+            // Turn towards the crater, and drive straight towards it
 
-        runToPos(10, 1);
+            //turnByDegree(-45, 0.5f);
+
+            //runToPos(10, 1);
+            return;
+       }
+
+        stopMotors();
     }
 
     // Updates the current heading value for our imu
@@ -319,6 +321,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
 
     }
 
+    // A simple drive method (linear)
     private void linearDrive(float power){
         FLMotor.setPower(power);
         FRMotor.setPower(power);
@@ -326,13 +329,17 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         BRMotor.setPower(power);
     }
 
+    // Sets all motor powers to zero.
     private void stopMotors() {
         FLMotor.setPower(0);
         FRMotor.setPower(0);
         BLMotor.setPower(0);
         BRMotor.setPower(0);
+        liftMotor.setPower(0);
+
     }
 
+    // A simple strafing method that takes a direction (-1 = left, 1 = right)
     private void strafe (int direction, float power){
         runEncoder(true);
         if(direction == -1){
@@ -348,6 +355,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         }
     }
 
+    // A simple tank turn method (-1 = left, 1 = right)
     private void turn (int direction, float power){
         runEncoder(true);
         if(direction == -1){
@@ -363,6 +371,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         }
     }
 
+    // Uses the built in REV imu as a gyro and turns a certain degree
     private void turnByDegree (int degree, float power) {
 
         // find new angle to rotate to
@@ -395,6 +404,34 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
             BRMotor.setPower(-power);
 
             while(getHeading() > turnTo){
+            }
+        }
+
+        stopMotors();
+
+    }
+
+    private void turnToDegree (int degree, float power) {
+
+        runEncoder(true);
+
+        // if to the right, turn right, vise versa
+        if(getHeading() < degree){
+
+            FLMotor.setPower(-power);
+            FRMotor.setPower(power);
+            BLMotor.setPower(-power);
+            BRMotor.setPower(power);
+
+            while(getHeading() < degree){
+            }
+        } else if (getHeading() > degree){
+            FLMotor.setPower(power);
+            FRMotor.setPower(-power);
+            BLMotor.setPower(power);
+            BRMotor.setPower(-power);
+
+            while(getHeading() > degree){
             }
         }
 
