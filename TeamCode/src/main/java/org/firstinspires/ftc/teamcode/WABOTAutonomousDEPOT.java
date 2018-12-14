@@ -120,7 +120,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
@@ -171,45 +171,39 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
             // depending on where the gold is, drive to that
             if(gPos == -1){
                 runToPos(4, 0.5f);
-                turnByDegree(-45, 0.5f);
-                turnByDegree(135, 0.5f);
-                sleep(500);
-                runToPos(10, 0.5f);
+                turnByDegree(-90, 0.5f);
             } else if (gPos == 1) {
                 strafe(1, 50);
-                sleep(900);
+                sleep(800);
                 stopMotors();
-                runToPos(3.5f, 0.5f);
+                runToPos(3, 0.5f);
                 turnByDegree(45, 0.5f);
-                runToPos(1.5f, 0.5f);
-                turnByDegree(-90, 0.5f);
+                runToPos(2, 0.5f);
+                turnByDegree(-135, 0.5f);
             } else {
                 strafe(-1, 50);
                 sleep(1000);
                 stopMotors();
                 runToPos(2, 0.5f);
                 turnByDegree(-45, 0.5f);
-                sleep(500);
-                stopMotors();
                 runToPos(2, 0.5f);
                 turnByDegree(-45, 0.5f);
             }
 
             // After being in the depot, dispense the marker
 
-            //markerServo.setPower(1f);
+            markerServo.setPower(0f);
 
-            //sleep(1000);
+            sleep(1000);
 
-            //markerServo.setPower(0f);
+            markerServo.setPower(0.5f);
 
             // Turn towards the crater, and drive straight towards it
 
-            //turnByDegree(-45, 0.5f);
+            turnByDegree(225, 0.5f);
 
-            //runToPos(10, 1);
-            return;
-       }
+            runToPos(7, 1);
+        }
 
         stopMotors();
     }
@@ -404,34 +398,6 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
             BRMotor.setPower(-power);
 
             while(getHeading() > turnTo){
-            }
-        }
-
-        stopMotors();
-
-    }
-
-    private void turnToDegree (int degree, float power) {
-
-        runEncoder(true);
-
-        // if to the right, turn right, vise versa
-        if(getHeading() < degree){
-
-            FLMotor.setPower(-power);
-            FRMotor.setPower(power);
-            BLMotor.setPower(-power);
-            BRMotor.setPower(power);
-
-            while(getHeading() < degree){
-            }
-        } else if (getHeading() > degree){
-            FLMotor.setPower(power);
-            FRMotor.setPower(-power);
-            BLMotor.setPower(power);
-            BRMotor.setPower(-power);
-
-            while(getHeading() > degree){
             }
         }
 
