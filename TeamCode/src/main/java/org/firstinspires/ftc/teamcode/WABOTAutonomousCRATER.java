@@ -3,14 +3,21 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -22,6 +29,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 @Autonomous(name="WABOTAutonomousCRATER", group="WABOT")
 public class WABOTAutonomousCRATER extends LinearOpMode {
@@ -37,7 +46,7 @@ public class WABOTAutonomousCRATER extends LinearOpMode {
     DcMotor intakeMotor;
     DcMotor gearboxMotor;
 
-    CRServo markerServo;
+    Servo markerServo;
     DistanceSensor ods;
     ColorSensor color1;
     BNO055IMU imu;
@@ -80,7 +89,7 @@ public class WABOTAutonomousCRATER extends LinearOpMode {
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         gearboxMotor = hardwareMap.get(DcMotor.class, "gearboxMotor");
 
-        markerServo = hardwareMap.get(CRServo.class, "markerServo");
+        markerServo = hardwareMap.get(Servo.class, "markerServo");
         ods = hardwareMap.get(DistanceSensor.class, "ods");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
@@ -109,11 +118,11 @@ public class WABOTAutonomousCRATER extends LinearOpMode {
         telemetry.update();
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
         imu.initialize(parameters);
@@ -140,7 +149,10 @@ public class WABOTAutonomousCRATER extends LinearOpMode {
         telemetry.addLine("Calibrating Gyro...");
         telemetry.update();
 
-        while(!imu.isGyroCalibrated()){ }
+        markerServo.setPosition(1f);
+
+        while (!imu.isGyroCalibrated()) {
+        }
 
         if (tfod != null) {
             tfod.activate();
@@ -152,62 +164,75 @@ public class WABOTAutonomousCRATER extends LinearOpMode {
         waitForStart();
 
         // Our auto while loop body
-        while(opModeIsActive()){
+        while (opModeIsActive()) {
             // First, detect any minerals and drive forward
 
             int gPos = runTFod();
 
-            runToPos(2, 0.5f);
+            runToPos(1.7f, 0.5f);
 
-            // depending on where the gold is, drive to that
-            if(gPos == -1){
-                runToPos(1, 0.5f);
-                turnByDegree(180, 0.5f);
-                runToPos(1, 0.5f);
+            if (gPos == -1) {
+                runToPos(1f, 0.5f);
+                linearDrive(-0.5f);
+                sleep(450);
+                stopMotors();
                 turnByDegree(90, 0.5f);
+                runToPos(4f, 1f);
+                turnByDegree(45, 0.5f);
                 runToPos(5, 0.5f);
+                turnByDegree(45, 0.5f);
             } else if (gPos == 1) {
                 strafe(1, 50);
                 sleep(800);
                 stopMotors();
-                runToPos(1, 0.5f);
-                turnByDegree(180, 0.5f);
-                runToPos(1, 0.5f);
+                runToPos(1f, 0.5f);
+                linearDrive(-0.5f);
+                sleep(450);
+                stopMotors();
                 turnByDegree(90, 0.5f);
-                runToPos(7, 0.5f);
+                runToPos(5.3f, 1f);
+                turnByDegree(45, 0.5f);
+                runToPos(5, 0.5f);
+                turnByDegree(45, 0.5f);
             } else {
                 strafe(-1, 50);
                 sleep(1000);
                 stopMotors();
-                runToPos(1, 0.5f);
-                turnByDegree(180, 0.5f);
-                runToPos(1, 0.5f);
+                runToPos(1f, 0.5f);
+                linearDrive(-0.5f);
+                sleep(450);
+                stopMotors();
                 turnByDegree(90, 0.5f);
-                runToPos(3, 0.5f);
+                runToPos(2f, 1f);
+                turnByDegree(45, 0.5f);
+                runToPos(5, 0.5f);
+                turnByDegree(45, 0.5f);
             }
 
-            turnByDegree(-45, 0.5f);
-
-            runToPos(8, 1);
-
-            turnByDegree(-45, 0.5f);
 
             // After being in the depot, dispense the marker
 
-            markerServo.setPower(0f);
+            markerServo.setPosition(0f);
 
             sleep(1000);
 
-            markerServo.setPower(0.5f);
+            markerServo.setPosition(1f);
+
+            turnByDegree(-45, 0.5f);
 
             // Turn towards the crater, and drive straight towards it
 
-            turnByDegree(225, 0.5f);
+            linearDrive(-1f);
 
-            runToPos(7, 1);
+            sleep(4500);
+
+            stopMotors();
+
+            return;
         }
 
         stopMotors();
+
     }
 
     // Updates the current heading value for our imu
@@ -369,6 +394,12 @@ public class WABOTAutonomousCRATER extends LinearOpMode {
 
     // Uses the built in REV imu as a gyro and turns a certain degree
     private void turnByDegree (int degree, float power) {
+
+        if(degree > 0){
+            degree -= 9;
+        } else if (degree < 0){
+            degree += 9;
+        }
 
         // find new angle to rotate to
         float turnTo = degree + getHeading();
