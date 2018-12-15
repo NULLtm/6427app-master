@@ -46,7 +46,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
     DcMotor intakeMotor;
     DcMotor gearboxMotor;
 
-    CRServo markerServo;
+    Servo markerServo;
     DistanceSensor ods;
     ColorSensor color1;
     BNO055IMU imu;
@@ -89,7 +89,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         gearboxMotor = hardwareMap.get(DcMotor.class, "gearboxMotor");
 
-        markerServo = hardwareMap.get(CRServo.class, "markerServo");
+        markerServo = hardwareMap.get(Servo.class, "markerServo");
         ods = hardwareMap.get(DistanceSensor.class, "ods");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
@@ -149,6 +149,8 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         telemetry.addLine("Calibrating Gyro...");
         telemetry.update();
 
+        markerServo.setPosition(1f);
+
         while(!imu.isGyroCalibrated()){ }
 
         if (tfod != null) {
@@ -166,43 +168,85 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
 
             int gPos = runTFod();
 
-            runToPos(2, 0.5f);
+            runToPos(1.5f, 0.5f);
 
             // depending on where the gold is, drive to that
-            if(gPos == -1){
-                runToPos(4, 0.5f);
+            /*if(gPos == -1){
+                runToPos(4f, 0.5f);
                 turnByDegree(-90, 0.5f);
             } else if (gPos == 1) {
                 strafe(1, 50);
                 sleep(800);
                 stopMotors();
-                runToPos(3, 0.5f);
-                turnByDegree(45, 0.5f);
-                runToPos(2, 0.5f);
+                runToPos(3.5f, 0.5f);
+                turnByDegree(38, 0.5f);
+                runToPos(1f, 0.5f);
                 turnByDegree(-135, 0.5f);
             } else {
                 strafe(-1, 50);
                 sleep(1000);
                 stopMotors();
+                runToPos(2.5f, 0.5f);
+                turnByDegree(-45, 0.5f);
                 runToPos(2, 0.5f);
+                turnByDegree(-45, 0.5f);
+            }*/
+
+
+            if(gPos == -1){
+                runToPos(1f, 0.5f);
+                linearDrive(-0.5f);
+                sleep(250);
+                stopMotors();
+                turnByDegree(90, 0.5f);
+                runToPos(3.7f, 1f);
+                turnByDegree(-135, 0.5f);
+                runToPos(5, 0.5f);
+                turnByDegree(-45, 0.5f);
+            } else if (gPos == 1) {
+                strafe(1, 50);
+                sleep(800);
+                stopMotors();
+                runToPos(1f, 0.5f);
+                linearDrive(-0.5f);
+                sleep(250);
+                stopMotors();
+                turnByDegree(90, 0.5f);
+                runToPos(6f, 1f);
+                turnByDegree(-135, 0.5f);
+                runToPos(5, 0.5f);
+                turnByDegree(-45, 0.5f);
+            } else {
+                strafe(-1, 50);
+                sleep(1000);
+                stopMotors();
+                runToPos(2.5f, 0.5f);
                 turnByDegree(-45, 0.5f);
                 runToPos(2, 0.5f);
                 turnByDegree(-45, 0.5f);
             }
 
+
+
             // After being in the depot, dispense the marker
 
-            markerServo.setPower(0f);
+            markerServo.setPosition(0f);
 
             sleep(1000);
 
-            markerServo.setPower(0.5f);
+            markerServo.setPosition(1f);
+
+            turnByDegree(45, 0.5f);
 
             // Turn towards the crater, and drive straight towards it
 
-            turnByDegree(225, 0.5f);
+            linearDrive(-1f);
 
-            runToPos(7, 1);
+            sleep(4000);
+
+            stopMotors();
+
+            return;
         }
 
         stopMotors();
@@ -317,6 +361,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
 
     // A simple drive method (linear)
     private void linearDrive(float power){
+        runEncoder(true);
         FLMotor.setPower(power);
         FRMotor.setPower(power);
         BLMotor.setPower(power);
@@ -367,6 +412,12 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
 
     // Uses the built in REV imu as a gyro and turns a certain degree
     private void turnByDegree (int degree, float power) {
+
+        if(degree > 0){
+            degree -= 9;
+        } else if (degree < 0){
+            degree += 9;
+        }
 
         // find new angle to rotate to
         float turnTo = degree + getHeading();
