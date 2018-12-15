@@ -118,11 +118,11 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         telemetry.update();
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
         imu.initialize(parameters);
@@ -151,7 +151,8 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
 
         markerServo.setPosition(1f);
 
-        while(!imu.isGyroCalibrated()){ }
+        while (!imu.isGyroCalibrated()) {
+        }
 
         if (tfod != null) {
             tfod.activate();
@@ -163,44 +164,21 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         waitForStart();
 
         // Our auto while loop body
-        while(opModeIsActive()){
+        while (opModeIsActive()) {
             // First, detect any minerals and drive forward
 
             int gPos = runTFod();
 
-            runToPos(1.5f, 0.5f);
+            runToPos(1.7f, 0.5f);
 
-            // depending on where the gold is, drive to that
-            /*if(gPos == -1){
-                runToPos(4f, 0.5f);
-                turnByDegree(-90, 0.5f);
-            } else if (gPos == 1) {
-                strafe(1, 50);
-                sleep(800);
-                stopMotors();
-                runToPos(3.5f, 0.5f);
-                turnByDegree(38, 0.5f);
-                runToPos(1f, 0.5f);
-                turnByDegree(-135, 0.5f);
-            } else {
-                strafe(-1, 50);
-                sleep(1000);
-                stopMotors();
-                runToPos(2.5f, 0.5f);
-                turnByDegree(-45, 0.5f);
-                runToPos(2, 0.5f);
-                turnByDegree(-45, 0.5f);
-            }*/
-
-
-            if(gPos == -1){
+            if (gPos == -1) {
                 runToPos(1f, 0.5f);
                 linearDrive(-0.5f);
-                sleep(250);
+                sleep(450);
                 stopMotors();
                 turnByDegree(90, 0.5f);
-                runToPos(3.7f, 1f);
-                turnByDegree(-135, 0.5f);
+                runToPos(4f, 1f);
+                turnByDegree(-130, 0.5f);
                 runToPos(5, 0.5f);
                 turnByDegree(-45, 0.5f);
             } else if (gPos == 1) {
@@ -209,23 +187,27 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
                 stopMotors();
                 runToPos(1f, 0.5f);
                 linearDrive(-0.5f);
-                sleep(250);
+                sleep(450);
                 stopMotors();
                 turnByDegree(90, 0.5f);
-                runToPos(6f, 1f);
-                turnByDegree(-135, 0.5f);
+                runToPos(5.3f, 1f);
+                turnByDegree(-133, 0.5f);
                 runToPos(5, 0.5f);
                 turnByDegree(-45, 0.5f);
             } else {
                 strafe(-1, 50);
                 sleep(1000);
                 stopMotors();
-                runToPos(2.5f, 0.5f);
-                turnByDegree(-45, 0.5f);
-                runToPos(2, 0.5f);
+                runToPos(1f, 0.5f);
+                linearDrive(-0.5f);
+                sleep(450);
+                stopMotors();
+                turnByDegree(90, 0.5f);
+                runToPos(2f, 1f);
+                turnByDegree(-133, 0.5f);
+                runToPos(5, 0.5f);
                 turnByDegree(-45, 0.5f);
             }
-
 
 
             // After being in the depot, dispense the marker
@@ -242,7 +224,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
 
             linearDrive(-1f);
 
-            sleep(4000);
+            sleep(4500);
 
             stopMotors();
 
@@ -250,6 +232,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         }
 
         stopMotors();
+
     }
 
     // Updates the current heading value for our imu
@@ -361,7 +344,6 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
 
     // A simple drive method (linear)
     private void linearDrive(float power){
-        runEncoder(true);
         FLMotor.setPower(power);
         FRMotor.setPower(power);
         BLMotor.setPower(power);

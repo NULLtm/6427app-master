@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -33,10 +34,13 @@ public class WABOTTeleopFIXED extends OpMode {
     DcMotor intakeMotor;
     DcMotor gearboxMotor;
 
+    Servo intakeServo;
+
     final double MAX_SPEED = 0.75;
 
     double liftVar = 0;
     double intakeVar = 0;
+    double blockVar = 0;
 
     public void init(){
         FLMotor = hardwareMap.get(DcMotor.class, "FLMotor");
@@ -48,6 +52,8 @@ public class WABOTTeleopFIXED extends OpMode {
         armMotor = hardwareMap.get(DcMotor.class, "armMotor");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         gearboxMotor = hardwareMap.get(DcMotor.class, "gearboxMotor");
+
+        intakeServo = hardwareMap.get(Servo.class, "intakeServo");
 
         ods = hardwareMap.get(DistanceSensor.class, "ods");
 
@@ -94,10 +100,20 @@ public class WABOTTeleopFIXED extends OpMode {
             liftVar = 0;
         }
 
+        if(gamepad2.a){
+            blockVar = 1;
+        }else if(gamepad2.y){
+            blockVar = -1;
+        }else{
+            blockVar = 0;
+        }
+
+
         liftMotor.setPower(liftVar);
         armMotor.setPower(-gamepad2.right_stick_y/(1+(1/3)));
         intakeMotor.setPower(intakeVar);
-        gearboxMotor.setPower((-gamepad2.left_stick_y)/(1+(1/3)));
+        gearboxMotor.setPower((gamepad2.left_stick_y)/(1+(1/10)));
+        intakeServo.setPosition(blockVar);
 
 
         // (!) (!) (!) HOLONOMIC DRIVE DO NOT TOUCH (!) (!) (!)
