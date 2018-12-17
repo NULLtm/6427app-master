@@ -174,39 +174,46 @@ public class WABOTAutonomousCRATER extends LinearOpMode {
             if (gPos == -1) {
                 runToPos(1f, 0.5f);
                 linearDrive(-0.5f);
-                sleep(450);
+                sleep(500);
                 stopMotors();
                 turnByDegree(90, 0.5f);
-                runToPos(4f, 1f);
-                turnByDegree(45, 0.5f);
+                runToPos(3.7f, 1f);
+                turnByDegree(50, 0.5f);
                 runToPos(5, 0.5f);
-                turnByDegree(45, 0.5f);
+                turnByDegree(-85, 0.5f);
             } else if (gPos == 1) {
                 strafe(1, 50);
                 sleep(800);
                 stopMotors();
                 runToPos(1f, 0.5f);
                 linearDrive(-0.5f);
-                sleep(450);
+                sleep(500);
                 stopMotors();
                 turnByDegree(90, 0.5f);
-                runToPos(5.3f, 1f);
-                turnByDegree(45, 0.5f);
+                runToPos(5.1f, 1f);
+                turnByDegree(50, 0.5f);
                 runToPos(5, 0.5f);
-                turnByDegree(45, 0.5f);
-            } else {
+                turnByDegree(-85, 0.5f);
+            } else if(gPos == 10){
+                turnByDegree(90, 0.5f);
+                runToPos(4f, 1f);
+                turnByDegree(50, 0.5f);
+                runToPos(5, 0.5f);
+                turnByDegree(-85, 0.5f);
+            }
+            else {
                 strafe(-1, 50);
                 sleep(1000);
                 stopMotors();
                 runToPos(1f, 0.5f);
                 linearDrive(-0.5f);
-                sleep(450);
+                sleep(500);
                 stopMotors();
                 turnByDegree(90, 0.5f);
                 runToPos(2f, 1f);
-                turnByDegree(45, 0.5f);
+                turnByDegree(50, 0.5f);
                 runToPos(5, 0.5f);
-                turnByDegree(45, 0.5f);
+                turnByDegree(-85, 0.5f);
             }
 
 
@@ -218,7 +225,7 @@ public class WABOTAutonomousCRATER extends LinearOpMode {
 
             markerServo.setPosition(1f);
 
-            turnByDegree(-45, 0.5f);
+            turnByDegree(95, 0.5f);
 
             // Turn towards the crater, and drive straight towards it
 
@@ -248,7 +255,7 @@ public class WABOTAutonomousCRATER extends LinearOpMode {
             updatedRecognitions = tfod.getUpdatedRecognitions();
             if (updatedRecognitions != null) {
                 telemetry.addData("# Object Detected", updatedRecognitions.size());
-                if (updatedRecognitions.size() != 0) {
+                if (updatedRecognitions.size() >= 2) {
                     int goldMineralX = -1;
                     int silverMineral1X = -1;
                     int silverMineral2X = -1;
@@ -272,8 +279,9 @@ public class WABOTAutonomousCRATER extends LinearOpMode {
                             return 0;
                         }
                     }
+                } else {
+                    return 10;
                 }
-                telemetry.update();
             }
         }
         return 10;

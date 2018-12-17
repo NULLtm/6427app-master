@@ -20,8 +20,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 // (!)(!)(!) OWEN DO NOT TOUCH (!) (!) (!)
 
-@TeleOp(name = "WABOTTeleopFIXED", group = "WABOT")
-public class WABOTTeleopFIXED extends OpMode {
+@TeleOp(name = "WABOTTeleop", group = "WABOT")
+public class WABOTTeleop extends OpMode {
     DcMotor FLMotor;
     DcMotor FRMotor;
     DcMotor BLMotor;
@@ -112,9 +112,8 @@ public class WABOTTeleopFIXED extends OpMode {
         liftMotor.setPower(liftVar);
         armMotor.setPower(-gamepad2.right_stick_y/(1+(1/3)));
         intakeMotor.setPower(intakeVar);
-        gearboxMotor.setPower((gamepad2.left_stick_y)/(1+(1/10)));
+        gearboxMotor.setPower((gamepad2.left_stick_y)/(3));
         intakeServo.setPosition(blockVar);
-
 
         // (!) (!) (!) HOLONOMIC DRIVE DO NOT TOUCH (!) (!) (!)
         double leftStickX = -gamepad1.right_stick_x;

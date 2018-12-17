@@ -33,8 +33,8 @@ import java.util.List;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
-@Autonomous(name="WABOTAutonomousDEPOT", group="WABOT")
-public class WABOTAutonomousDEPOT extends LinearOpMode {
+@Autonomous(name="WABOTAutonomousDROP", group="WABOT")
+public class WABOTAutonomousDROP_ONLY extends LinearOpMode {
 
     // variable set up here!
     DcMotor FLMotor;
@@ -138,9 +138,9 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
 
         vuforia = ClassFactory.getInstance().createVuforia(vuParameters);
 
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minimumConfidence = 0.25;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
 
@@ -168,86 +168,29 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
         while (opModeIsActive()) {
             // First, detect any minerals and drive forward
 
-            /*liftMotor.setPower(1);
+            liftMotor.setPower(-1f);
 
-            while(ods.getDistance(DistanceUnit.CM) > 11.3){
+            while(ods.getDistance(DistanceUnit.CM)>9.1){
+
             }
 
-            sleep(250);
+            sleep(600);
 
             stopMotors();
 
             runToPos(1, 0.5f);
 
-            turnByDegree(90, 0.5f);*/
-
-            int gPos = runTFod();
-
-            runToPos(1.7f, 0.5f);
-
-            if (gPos == -1) {
-                runToPos(1f, 0.5f);
-                linearDrive(-0.5f);
-                sleep(450);
-                stopMotors();
-                turnByDegree(90, 0.5f);
-                runToPos(4f, 1f);
-                turnByDegree(-130, 0.5f);
-                runToPos(5, 0.5f);
-                turnByDegree(-90, 0.5f);
-            } else if (gPos == 1) {
-                strafe(1, 50);
-                sleep(800);
-                stopMotors();
-                runToPos(1f, 0.5f);
-                linearDrive(-0.5f);
-                sleep(450);
-                stopMotors();
-                turnByDegree(90, 0.5f);
-                runToPos(5.1f, 1f);
-                turnByDegree(-133, 0.5f);
-                runToPos(5, 0.5f);
-                turnByDegree(-90, 0.5f);
-            } else if(gPos == 10){
-                turnByDegree(90, 0.5f);
-                runToPos(4f, 1f);
-                turnByDegree(-130, 0.5f);
-                runToPos(5, 0.5f);
-                turnByDegree(-90, 0.5f);
-            }
-            else {
-                strafe(-1, 50);
-                sleep(1000);
-                stopMotors();
-                runToPos(1f, 0.5f);
-                linearDrive(-0.5f);
-                sleep(450);
-                stopMotors();
-                turnByDegree(90, 0.5f);
-                runToPos(2f, 1f);
-                turnByDegree(-133, 0.5f);
-                runToPos(5, 0.5f);
-                turnByDegree(-90, 0.5f);
-            }
-
-
-            // After being in the depot, dispense the marker
-
-            markerServo.setPosition(0f);
+            strafe(-1, 1f);
 
             sleep(1000);
 
-            markerServo.setPosition(1f);
-
-            turnByDegree(80, 0.5f);
-
-            // Turn towards the crater, and drive straight towards it
-
-            linearDrive(-1f);
-
-            sleep(4500);
-
             stopMotors();
+
+            turnByDegree(90, 0.5f);
+
+            runToPos(4, 0.5f);
+
+
 
             return;
         }
@@ -269,7 +212,7 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
             updatedRecognitions = tfod.getUpdatedRecognitions();
             if (updatedRecognitions != null) {
                 telemetry.addData("# Object Detected", updatedRecognitions.size());
-                if (updatedRecognitions.size() >= 2) {
+                if (updatedRecognitions.size() != 0) {
                     int goldMineralX = -1;
                     int silverMineral1X = -1;
                     int silverMineral2X = -1;
@@ -293,9 +236,8 @@ public class WABOTAutonomousDEPOT extends LinearOpMode {
                             return 0;
                         }
                     }
-                } else {
-                    return 10;
                 }
+                telemetry.update();
             }
         }
         return 10;

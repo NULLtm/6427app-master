@@ -13,9 +13,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 
 // the main class (extending inherits all the data from opmode)
-@Disabled
-@Autonomous(name = "ExampleTeleop", group = "ExampleOpModes")
-public class ExampleOpMode extends OpMode {
+@Disabled // <-- For making the op mode not appear on the app drop down menus
+@Autonomous(name = "ExampleTeleop", group = "ExampleOpModes") // <-- The name and type of op mode displayed on the app, change to @teleop for it to appear under teleop code
+public class ExampleOpMode extends OpMode { // OpMode is typically used for teleop programs while LinearOpMode is used for autonomous code
+    // declaring our hardware components
     DcMotor FLMotor;
     DcMotor FRMotor;
     DcMotor BLMotor;
@@ -24,6 +25,7 @@ public class ExampleOpMode extends OpMode {
     GyroSensor gyro1;
     CompassSensor compass1;
 
+    // our init function where we gather the data from the hardware map on our phone is set our local variables to those
     public void init(){
         FLMotor = hardwareMap.get(DcMotor.class, "FLMotor");
         FRMotor = hardwareMap.get(DcMotor.class, "FRMotor");
@@ -33,6 +35,8 @@ public class ExampleOpMode extends OpMode {
         gyro1 = hardwareMap.get(GyroSensor.class, "gyro1");
         compass1 = hardwareMap.get(CompassSensor.class, "compass1");
 
+
+        // setting up properties for our motors like direction, encoder mode, and brake mode
         BRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         BLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         FRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -46,6 +50,7 @@ public class ExampleOpMode extends OpMode {
         BLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        // calibrating gyro to make sure it is accurate
         gyro1.calibrate();
 
         while(gyro1.isCalibrating()){
@@ -53,11 +58,15 @@ public class ExampleOpMode extends OpMode {
         }
     }
 
+    // Our main loop that will run over and over until the program is stopped
     public void loop(){
         turnRobot(90);
+
+        // calling a telemetry call to send data to our driver station
         telemetry.addData("Heading: ", gyro1.getHeading());
     }
 
+    // A simple turning method
     public void turnRobot(int degrees){
         int startH = gyro1.getHeading();
         while(gyro1.getHeading()-startH < degrees){
