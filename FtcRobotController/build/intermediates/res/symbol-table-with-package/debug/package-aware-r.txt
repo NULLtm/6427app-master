@@ -155,6 +155,7 @@ attr fontProviderFetchTimeout
 attr fontProviderPackage
 attr fontProviderQuery
 attr fontStyle
+attr fontVariationSettings
 attr fontWeight
 attr gapBetweenBars
 attr goIcon
@@ -299,6 +300,7 @@ attr tooltipText
 attr track
 attr trackTint
 attr trackTintMode
+attr ttcIndex
 attr viewInflaterClass
 attr voiceIcon
 attr windowActionBar
@@ -566,6 +568,8 @@ dimen compat_button_inset_vertical_material
 dimen compat_button_padding_horizontal_material
 dimen compat_button_padding_vertical_material
 dimen compat_control_corner_material
+dimen compat_notification_large_icon_max_height
+dimen compat_notification_large_icon_max_width
 dimen disabled_alpha_material_dark
 dimen disabled_alpha_material_light
 dimen highlight_alpha_material_colored
@@ -684,6 +688,7 @@ drawable abc_vector_test
 drawable black_border
 drawable button_shape
 drawable feedback_shape_orange
+drawable ic_arrow_back_black_24dp
 drawable ic_launcher
 drawable icon_menu
 drawable icon_robotcontroller
@@ -699,6 +704,7 @@ drawable notification_template_icon_bg
 drawable notification_template_icon_low_bg
 drawable notification_tile_bg
 drawable notify_panel_notification_icon_bg
+drawable skystone_background
 drawable tooltip_frame_dark
 drawable tooltip_frame_light
 id RelativeLayout
@@ -742,6 +748,8 @@ id appsInstalled
 id appsStatus
 id async
 id attached_title
+id backButton
+id backbar
 id backgroundDarkGrayHolder
 id backgroundLightHolder
 id backgroundMediumHolder
@@ -768,6 +776,7 @@ id configIsReadOnlyFeedback
 id configureButton
 id configureFromTemplate
 id configureFromTemplateArea
+id container
 id contentPanel
 id controller_name
 id controller_name_prompt_text
@@ -794,6 +803,7 @@ id end
 id entire_screen
 id expand_activities_button
 id expanded_menu
+id explanationText
 id feedback
 id feedbackAnchor
 id feedbackAnchorDuplicateNames
@@ -819,6 +829,7 @@ id icon_group
 id idActiveConfigHeader
 id idActiveConfigName
 id image
+id imageView
 id included_header
 id inclusionlayout
 id info
@@ -891,6 +902,7 @@ id osVersion
 id osVersionLayout
 id parentPanel
 id passphrase
+id permDeniedText
 id port0
 id port1
 id port2
@@ -955,6 +967,8 @@ id tableLayout_analogOutput_devices
 id tableLayout_analog_input_devices
 id table_header
 id tag_transition_group
+id tag_unhandled_key_event_manager
+id tag_unhandled_key_listeners
 id templateList
 id templateListCaption
 id templateNameText
@@ -1057,6 +1071,7 @@ layout activity_ftc_wifi_remembered_groups
 layout activity_generic_settings
 layout activity_inspection
 layout activity_load
+layout activity_permissions_validator
 layout activity_program_and_manage
 layout activity_programming_mode
 layout activity_swap_usb_devices
@@ -1065,6 +1080,7 @@ layout analog_input_device
 layout analog_inputs
 layout analog_output_device
 layout analog_outputs
+layout backbar_layout
 layout banner_parent
 layout button_list
 layout color_list_preference_line_item
@@ -1126,6 +1142,24 @@ raw gold
 raw nxtstartupsound
 raw silver
 raw simple_vertex_shader
+raw ss_alarm
+raw ss_bb8_down
+raw ss_bb8_up
+raw ss_darth_vader
+raw ss_fly_by
+raw ss_laser
+raw ss_laser_burst
+raw ss_light_saber
+raw ss_light_saber_long
+raw ss_light_saber_short
+raw ss_light_speed
+raw ss_mf_fail
+raw ss_mine
+raw ss_power_up
+raw ss_r2d2_up
+raw ss_roger_roger
+raw ss_siren
+raw ss_wookie
 raw texture_fragment_shader
 raw texture_vertex_shader
 raw warningmessage
@@ -1175,6 +1209,7 @@ string about_library_version
 string about_menu_item
 string about_network_connection_info
 string about_network_protocol_version
+string about_os_version
 string about_wifi_connected
 string about_wifi_direct_info
 string about_wifi_group_owner
@@ -1209,6 +1244,28 @@ string appNameUnknown
 string appThemeChangeRestartNotifyDS
 string appThemeChangeRestartNotifyRC
 string app_name
+string app_result_type_attempting_installation
+string app_result_type_auto_updated_app
+string app_result_type_failed_and_reverted
+string app_result_type_failed_to_restore
+string app_result_type_generic_install_failure
+string app_result_type_illegal_package
+string app_result_type_incompatible_with_device
+string app_result_type_installation_aborted
+string app_result_type_installation_blocked
+string app_result_type_installation_succeeded
+string app_result_type_installed_missing_app
+string app_result_type_invalid_apk_file
+string app_result_type_io_exception
+string app_result_type_rebooting_with_new_ap_service
+string app_result_type_replaced_wrong_app_variant
+string app_result_type_storage_failure
+string app_result_type_timeout_expired
+string app_result_type_uninstall_failed
+string app_result_type_uninstall_required
+string app_result_type_uninstalled_wrong_app_variant
+string app_result_type_uninstalling_existing_app
+string app_result_type_unknown_install_status
 string attached
 string availableConfigListCaption
 string availableConfigsInfoMessage
@@ -1232,6 +1289,7 @@ string buttonNameSwap
 string buttonWirelessApSettingsLabel
 string captionAvailableSwapDevices
 string captionAvailableUsbDevices
+string ch_updater_not_supported
 string choice_prompt
 string choice_prompt_analogInput
 string choice_prompt_analogOutput
@@ -1241,6 +1299,10 @@ string choice_prompt_module_address
 string choice_prompt_motor
 string choice_prompt_servo
 string clear_remembered_groups
+string common_result_type_busy_with_previous_request
+string common_result_type_file_does_not_exist
+string common_result_type_no_update_file
+string common_result_type_performing_startup_operations
 string configDirtyLabel
 string configFailedToOpenDeviceManager
 string configFromTemplateInfoMessage
@@ -1391,8 +1453,11 @@ string launch_wifi_settings
 string led_description
 string legacy_controller_name
 string load_menu_item
+string locationServices
 string log_label
 string lynxAnalogInputControllerDisplayName
+string lynxBatteryToLowMotor
+string lynxBatteryToLowServo
 string lynxDcMotorControllerDisplayName
 string lynxDigitalChannelControllerDisplayName
 string lynxFirmwareUpdateReadme
@@ -1420,6 +1485,7 @@ string lynx_fw_instructions_no_devices
 string lynx_fw_instructions_serial
 string lynx_fw_instructions_update
 string lynx_fw_instructions_update_post
+string manage_page_no_network
 string matrix_controller_name_prompt
 string matrix_motor_title
 string matrix_name_prompt
@@ -1486,6 +1552,14 @@ string not_available
 string nxtDcMotorControllerName
 string nxtServoControllerName
 string optical_distance_sensor_description
+string ota_result_type_device_not_supported
+string ota_result_type_downgrade_not_authorized
+string ota_result_type_error_reading_file
+string ota_result_type_failed_to_install
+string ota_result_type_invalid_file_location
+string ota_result_type_invalid_update_file
+string ota_result_type_ota_update_finished
+string ota_result_type_verification_succeeded
 string packageName
 string packageNameDriverStation
 string packageNameRobotController
@@ -1493,6 +1567,15 @@ string pairing_kind_title
 string passphrase_label
 string peerStatusConnected
 string peerStatusDisconnected
+string permAccessCoarseLocationExplain
+string permDsReadExternalStorageExplain
+string permDsWriteExternalStorageExplain
+string permGenericExplain
+string permPermanentlyDenied
+string permPermanentlyDeniedRecovery
+string permRcCameraExplain
+string permRcReadExternalStorageExplain
+string permRcWriteExternalStorageExplain
 string port
 string pref_app_category
 string pref_app_category_rc
@@ -1540,6 +1623,8 @@ string pref_network_connection_info_rc
 string pref_network_connection_type
 string pref_network_protocol_version
 string pref_network_protocol_version_rc
+string pref_os_version
+string pref_os_version_rc
 string pref_pair_rc
 string pref_pairing_kind
 string pref_pairing_kind_default
@@ -1571,6 +1656,8 @@ string prefedit_debug_driver_station_logs
 string prefedit_debug_driver_station_logs_summary
 string prefedit_device_name
 string prefedit_device_name_ds
+string prefedit_device_name_invalid_text
+string prefedit_device_name_invalid_title
 string prefedit_device_name_rc
 string prefedit_device_name_summary
 string prefedit_device_name_summary_ds
@@ -1612,6 +1699,8 @@ string rev_20_hd_hex_name
 string rev_40_hd_hex_name
 string rev_blinkin_description
 string rev_blinkin_name
+string rev_color_sensor_v3_description
+string rev_color_sensor_v3_name
 string rev_core_hex_name
 string rev_distributor
 string rev_laser_sensor_description
@@ -1723,6 +1812,7 @@ string toastWebViewDownloadsComplete
 string toastWifiConfigurationComplete
 string toastWifiP2pChannelChangeRequestedDS
 string toastWifiP2pRememberedGroupsCleared
+string toastWifiUpBeforeProgrammingMode
 string tokenThemeBlue
 string tokenThemeGreen
 string tokenThemeOrange
@@ -1731,6 +1821,7 @@ string tokenThemeRed
 string tokenThemeTeal
 string unavailable
 string unhealthyDevice
+string unknown_control_hub_error
 string unknown_wifi_direct_channel
 string update_lynx_firmware
 string usb_pid_name_logitech_c310
@@ -2139,7 +2230,9 @@ styleable CoordinatorLayout keylines statusBarBackground
 styleable CoordinatorLayout_Layout android_layout_gravity layout_anchor layout_anchorGravity layout_behavior layout_dodgeInsetEdges layout_insetEdge layout_keyline
 styleable DrawerArrowToggle arrowHeadLength arrowShaftLength barLength color drawableSize gapBetweenBars spinBars thickness
 styleable FontFamily fontProviderAuthority fontProviderCerts fontProviderFetchStrategy fontProviderFetchTimeout fontProviderPackage fontProviderQuery
-styleable FontFamilyFont android_font android_fontStyle android_fontWeight font fontStyle fontWeight
+styleable FontFamilyFont android_font android_fontStyle android_fontVariationSettings android_fontWeight android_ttcIndex font fontStyle fontVariationSettings fontWeight ttcIndex
+styleable GradientColor android_centerColor android_centerX android_centerY android_endColor android_endX android_endY android_gradientRadius android_startColor android_startX android_startY android_tileMode android_type
+styleable GradientColorItem android_color android_offset
 styleable LinearLayoutCompat android_baselineAligned android_baselineAlignedChildIndex android_gravity android_orientation android_weightSum divider dividerPadding measureWithLargestChild showDividers
 styleable LinearLayoutCompat_Layout android_layout_gravity android_layout_height android_layout_weight android_layout_width
 styleable ListPopupWindow android_dropDownHorizontalOffset android_dropDownVerticalOffset

@@ -1,119 +1,60 @@
-// the current package this class resides in
-package org.firstinspires.ftc.teamcode;
+/*
+ * Wright Angle Robotics #6427 2019-2020
+ *
+ */
 
-// access data outside of this class by importing it
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.CompassSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+@TeleOp(name="WABOTTeleop", group="WABOT")
+//@Disabled
+public class  WABOTTeleop extends OpMode {
+    // Declare OpMode members.
+    WABOTHardware h = new WABOTHardware(hardwareMap);
 
-// the main class (extending inherits all the data from opmode)
-
-// (!)(!)(!) OWEN DO NOT TOUCH (!) (!) (!)
-
-@TeleOp(name = "WABOTTeleop", group = "WABOT")
-public class WABOTTeleop extends OpMode {
-    DcMotor FLMotor;
-    DcMotor FRMotor;
-    DcMotor BLMotor;
-    DcMotor BRMotor;
-
-    DistanceSensor ods;
-
-    DcMotor liftMotor;
-    DcMotor armMotor;
-    DcMotor intakeMotor;
-    DcMotor gearboxMotor;
-
-    Servo intakeServo;
-
-    final double MAX_SPEED = 0.75;
-
-    double liftVar = 0;
-    double intakeVar = 0;
-    double blockVar = 0;
-
-    public void init(){
-        FLMotor = hardwareMap.get(DcMotor.class, "FLMotor");
-        FRMotor = hardwareMap.get(DcMotor.class, "FRMotor");
-        BLMotor = hardwareMap.get(DcMotor.class, "BLMotor");
-        BRMotor = hardwareMap.get(DcMotor.class, "BRMotor");
-
-        liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
-        armMotor = hardwareMap.get(DcMotor.class, "armMotor");
-        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        gearboxMotor = hardwareMap.get(DcMotor.class, "gearboxMotor");
-
-        intakeServo = hardwareMap.get(Servo.class, "intakeServo");
-
-        ods = hardwareMap.get(DistanceSensor.class, "ods");
-
-        BRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        BLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        FRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        FLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        FLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        FRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        FLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        FRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        gearboxMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    /*
+     * Code to run ONCE when the driver hits INIT
+     */
+    @Override
+    public void init() {
+        final double PRECISION_SPEED_MODIFIER = 0.5;
+        // Tell the driver that initialization is complete.
+        telemetry.addData("Status", "Initialized");
     }
 
+    /*
+     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
+     */
+    @Override
+    public void init_loop() {
+    }
+
+    /*
+     * Code to run ONCE when the driver hits PLAY
+     */
+    @Override
+    public void start() {
+        runtime.reset();
+    }
+
+    /*
+     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
+     */
     @Override
     public void loop() {
-
-        telemetry.addData("ODS DISTANCE (CM): ", ods.getDistance(DistanceUnit.CM));
-
-
-        if(gamepad2.right_bumper){
-            intakeVar = 0.9;
-        } else if (gamepad2.left_bumper){
-            intakeVar = -0.9;
-        } else {
-            intakeVar = 0;
+        if(gamepad2.dpad_down){
+            h.leftLatch.setPosition(0.8);
+            h.rightLatch.setPosition(0.8);
         }
-
-        if(gamepad2.dpad_up) {
-            liftVar = -1;
-        } else if(gamepad2.dpad_down){
-            liftVar = 1;
-        } else{
-            liftVar = 0;
+        if(gamepad2.dpad_up){
+            h.leftLatch.setPosition(0);
+            h.rightLatch.setPosition(0);
         }
-
-        if(gamepad2.a){
-            blockVar = 1;
-        }else if(gamepad2.y){
-            blockVar = -1;
-        }else{
-            blockVar = 0;
-        }
-
-
-        liftMotor.setPower(liftVar);
-        armMotor.setPower(-gamepad2.right_stick_y/(1+(1/3)));
-        intakeMotor.setPower(intakeVar);
-        gearboxMotor.setPower((gamepad2.left_stick_y)/(3));
-        intakeServo.setPosition(blockVar);
 
         // (!) (!) (!) HOLONOMIC DRIVE DO NOT TOUCH (!) (!) (!)
         double leftStickX = -gamepad1.right_stick_x;
@@ -121,36 +62,34 @@ public class WABOTTeleop extends OpMode {
         double rightStickX = -gamepad1.left_stick_x;
         double rightStickY = -gamepad1.right_stick_y;
 
-        double r = Math.hypot(rightStickX, leftStickY);
-        double robotAngle = Math.atan2(leftStickY, rightStickX) - (Math.PI / 4); /*- gyroSensor.getHeading()*/
-        double rightX = leftStickX;
-        double turn = -rightX;
+        double r = Math.hypot(leftStickX, leftStickY);
+        double robotAngle = Math.atan2(leftStickY, leftStickX) - (Math.PI / 4);
+        double rightX = rightStickX;
+        double turn = rightX;
 
         double v1 = r * Math.cos(robotAngle) + turn;
         double v2 = r * Math.sin(robotAngle) - turn;
         double v3 = r * Math.sin(robotAngle) + turn;
         double v4 = r * Math.cos(robotAngle) - turn;
 
-        FLMotor.setPower(v1);
-        FRMotor.setPower(v2);
-        BLMotor.setPower(v3);
-        BRMotor.setPower(v4);
+        if(gamepad1.right_bumper || gamepad1.left_bumper){
+            v1 = v1 * PRECISION_SPEED_MODIFIER;
+            v2 = v2 * PRECISION_SPEED_MODIFIER;
+            v3 = v3 * PRECISION_SPEED_MODIFIER;
+            v4 = v4 * PRECISION_SPEED_MODIFIER;
+        }
+        h.FLMotor.setPower(v1);
+        h.FRMotor.setPower(v2);
+        h.BLMotor.setPower(v3);
+        h.BRMotor.setPower(v4);
+        // (!) (!) (!) HOLONOMIC DRIVE DO NOT TOUCH (!) (!) (!  )
+    }
 
-        /*
-        double r = Math.hypot(-gamepad1.right_stick_x, gamepad1.left_stick_y);
-        double robotAngle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x) - (Math.PI / 4);
-        double turn = -gamepad1.left_stick_x;
-        */
-        /*double v1 = MAX_SPEED * (r * Math.cos(robotAngle) + turn);
-        double v2 = MAX_SPEED * (r * Math.sin(robotAngle) - turn);
-        double v3 = MAX_SPEED * (r * Math.sin(robotAngle) + turn);
-        double v4 = MAX_SPEED * (r * Math.cos(robotAngle) - turn);
-
-        FLMotor.setPower(v1);
-        FRMotor.setPower(v2);
-        BLMotor.setPower(v3);
-        BRMotor.setPower(v4);*/
-        // (!) (!) (!) HOLONOMIC DRIVE DO NOT TOUCH (!) (!) (!)
+    /*
+     * Code to run ONCE after the driver hits STOP
+     */
+    @Override
+    public void stop() {
     }
 
 }

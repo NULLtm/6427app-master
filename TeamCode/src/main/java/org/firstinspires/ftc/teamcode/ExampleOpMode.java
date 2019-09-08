@@ -2,91 +2,56 @@
 package org.firstinspires.ftc.teamcode;
 
 // access data outside of this class by importing it
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.CompassSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.GyroSensor;
 
 // the main class (extending inherits all the data from opmode)
-@Disabled // <-- For making the op mode not appear on the app drop down menus
-@Autonomous(name = "ExampleTeleop", group = "ExampleOpModes") // <-- The name and type of op mode displayed on the app, change to @teleop for it to appear under teleop code
-public class ExampleOpMode extends OpMode { // OpMode is typically used for teleop programs while LinearOpMode is used for autonomous code
-    // declaring our hardware components
-    DcMotor FLMotor;
-    DcMotor FRMotor;
-    DcMotor BLMotor;
-    DcMotor BRMotor;
-    ColorSensor color1;
-    GyroSensor gyro1;
-    CompassSensor compass1;
+@TeleOp(name = "ExampleTeleop", group = "ExampleOpModes")
+public class ExampleOpMode extends OpMode {
+    // here we declare variables and sometimes initialize them as well
+    public DcMotor exampleMotor;
 
-    // our init function where we gather the data from the hardware map on our phone is set our local variables to those
+    // used for initializing variables
+    @Override
     public void init(){
-        FLMotor = hardwareMap.get(DcMotor.class, "FLMotor");
-        FRMotor = hardwareMap.get(DcMotor.class, "FRMotor");
-        BLMotor = hardwareMap.get(DcMotor.class, "BLMotor");
-        BRMotor = hardwareMap.get(DcMotor.class, "BRMotor");
-        color1 = hardwareMap.get(ColorSensor.class, "color1");
-        gyro1 = hardwareMap.get(GyroSensor.class, "gyro1");
-        compass1 = hardwareMap.get(CompassSensor.class, "compass1");
-
-
-        // setting up properties for our motors like direction, encoder mode, and brake mode
-        BRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        BLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        FRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        FLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        FLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        FRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        FLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        FRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // calibrating gyro to make sure it is accurate
-        gyro1.calibrate();
-
-        while(gyro1.isCalibrating()){
-
-        }
+        // the parent class opMode has a built in hardwareMap variable it gets from the phone on runtime
+        // Here VV We are accessing the phone's hardware map, then finding the "component" we want, and setting it equal to a local variable
+        exampleMotor = hardwareMap.dcMotor.get("ExampleMotorName");
     }
 
-    // Our main loop that will run over and over until the program is stopped
+    // used for code you want to run ONLY when this opmode starts up
+    @Override
+    public void start(){
+        // here, we access our motor local variable and set up some properties beforehand
+        // An encoder is a device physically attached to the motor that monitors rotations and such, which we are not using here!
+        exampleMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        exampleMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        exampleMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    // code that runs over and over during runtime
+    @Override
     public void loop(){
-        turnRobot(90);
+        // game pad is another variable in our parent class opmode which is connected to any controllers hooked up to the phone!
+        // this if statement checks to see if A is pressed on the controller
+        if(gamepad1.a){
+            // Notice this "f", usually putting a straight float value would cause the computer to think it's a double, that's why there's an f
+            exampleMotor.setPower(0.5f);
+        } else{
+            // the else checks if the conditions are NOT met
+            exampleMotor.setPower(0);
+        }
 
-        // calling a telemetry call to send data to our driver station
-        telemetry.addData("Heading: ", gyro1.getHeading());
+        // here we access a cool opmode method called get runtime and use telemetry to print it to the screen!
+        telemetry.addData("Current RunTime:", getRuntime());
     }
 
-    // A simple turning method
-    public void turnRobot(int degrees){
-        int startH = gyro1.getHeading();
-        while(gyro1.getHeading()-startH < degrees){
-            int distanceFromTarget = Math.abs(degrees-gyro1.getHeading());
-            if(degrees < 0){
-                FLMotor.setPower(-0.2f);
-                FRMotor.setPower(0.2f);
-                BLMotor.setPower(-0.2f);
-                BRMotor.setPower(0.2f);
-            }
-            else if(degrees > 0){
-                FLMotor.setPower(0.2f);
-                FRMotor.setPower(-0.2f);
-                BLMotor.setPower(0.2f);
-                BRMotor.setPower(-0.2f);
-            }
-        }
-        FLMotor.setPower(0);
-        FRMotor.setPower(0);
-        BLMotor.setPower(0);
-        BRMotor.setPower(0);
+    // used for code you only want to run when this opmode stops
+    @Override
+    public void stop(){
+        // here I am just making sure everything is turned OFF so we don't have a rampant robot!
+        exampleMotor.setPower(0);
     }
 }

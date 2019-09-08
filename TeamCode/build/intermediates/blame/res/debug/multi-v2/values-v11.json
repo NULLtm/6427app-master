@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/owenboseley/Desktop/6427app-master/TeamCode/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v11/values-v11.xml",
+            "outputFile": "C:\\Users\\Owner\\Desktop\\SkyStone-master\\TeamCode\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v11\\values-v11.xml",
             "map": [
                 {
-                    "source": "/Users/owenboseley/.gradle/caches/transforms-1/files-1.1/RobotCore-release.aar/81055b0381598d42d9f5b8f61eba11cd/res/values-v11/values-v11.xml",
+                    "source": "C:\\Users\\Owner\\.gradle\\caches\\transforms-2\\files-2.1\\9e5f33e8abc583daba3a3e7dd1e27630\\res\\values-v11\\values-v11.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

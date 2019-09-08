@@ -17,12 +17,12 @@ public final class R {
     public static final class string {
         private string() {}
 
-        public static final int app_name = 0x7f0a0032;
+        public static final int app_name = 0x7f0b0033;
     }
     public static final class style {
         private style() {}
 
-        public static final int AppBaseTheme = 0x7f0b0000;
-        public static final int AppTheme = 0x7f0b0001;
+        public static final int AppBaseTheme = 0x7f0c0000;
+        public static final int AppTheme = 0x7f0c0001;
     }
 }

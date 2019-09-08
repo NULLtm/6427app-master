@@ -24,6 +24,7 @@
     <string name="toastConfigureRobotBeforeProgrammingMode">You must Configure Robot before starting Programming Mode.</string>
     <string name="toastRestartingRobot">Restarting Robot</string>
     <string name="toastWifiConfigurationComplete">Configuration Complete</string>
+    <string name="toastWifiUpBeforeProgrammingMode">The Robot Controller must be fully up and running before starting Programming Mode.  Is Wifi turned on in settings?</string>
     <style name="AppThemeBlueRC" parent="AppTheme.Blue">
     </style>
     <style name="AppThemeGreenRC" parent="AppTheme.Green">
