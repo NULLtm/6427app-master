@@ -19,8 +19,10 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
@@ -31,6 +33,7 @@ public class WABOTAutonomous extends LinearOpMode {
     // This provides the tick count for each rotation of an encoder, it's helpful for using run to position, 10CM DIAMETER
     private final int ENCODER_TICK = 1440;
 
+    // NOTE: Diameter is dependent on wheels!
     private final int DIAMETER = 10;
 
     // This value is the distance of 1 rev of the wheels measured in CM!!!!
@@ -44,7 +47,7 @@ public class WABOTAutonomous extends LinearOpMode {
     List<VuforiaTrackable> allTrackables;
     VuforiaTrackables targetsRoverRuckus;
 
-    private WABOTHardware h = new WABOTHardware(hardwareMap);
+    private WABOTHardware h;
 
     @Override
     public void runOpMode() {
@@ -54,12 +57,14 @@ public class WABOTAutonomous extends LinearOpMode {
         telemetry.addLine("Loading Robot... Please Wait");
         telemetry.update();
 
-        runEncoder(true);
+        h = new WABOTHardware(hardwareMap);
 
         telemetry.addLine("Hardware Map Complete!");
         telemetry.update();
 
-        telemetry.addLine("Starting up IMU...");
+        runEncoder(true);
+
+        telemetry.addLine("Encoders Functioning");
         telemetry.update();
 
         telemetry.addLine("Starting Vuforia...");
@@ -70,23 +75,86 @@ public class WABOTAutonomous extends LinearOpMode {
         vuParameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
         vuforia = ClassFactory.getInstance().createVuforia(vuParameters);
 
+        targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
+        VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
+        blueRover.setName("Blue-Rover");
+        VuforiaTrackable redFootprint = targetsRoverRuckus.get(1);
+        redFootprint.setName("Red-Footprint");
+        VuforiaTrackable frontCraters = targetsRoverRuckus.get(2);
+        frontCraters.setName("Front-Craters");
+        VuforiaTrackable backSpace = targetsRoverRuckus.get(3);
+        backSpace.setName("Back-Space");
+
+        allTrackables = new ArrayList<VuforiaTrackable>();
+        allTrackables.addAll(targetsRoverRuckus);
+
+        targetsRoverRuckus.activate();
+
         telemetry.addLine("Vuforia Complete");
         telemetry.update();
 
-        telemetry.addLine("Calibrating Gyro...");
-        telemetry.update();
+        // REST OF THE SET UP HERE!!
 
         telemetry.addLine("Init Complete! Ready to Go!");
         telemetry.update();
 
         waitForStart();
+
+        // VVVVV CODE FOR AUTO GOES HERE VVVVV
+
+        runToPos(2, 0.5f);
+
+        strafe(-9, 1);
+
+        runToPos(30, 0.5f);
+
+        // SERVOS CLOSE HERE
+
+        sleep(500);
+
+        runToPos(30, -0.5f);
+
+        // SERVOS OPEN HERE
+
+        sleep(500);
+
+        strafe(48, 1);
+
+
+
+
+
+
     }
 
-    // Uses encoders to move a specific distance away
-    private void runToPos(float revolution, float power){
-        int ticksToRun = Math.round(revolution * ENCODER_TICK);
-        runEncoder(true);
+    // Uses encoders to move a specific distance away given powers for each motor
+    private void runToPos(int distanceCM, float power1, float power2, float power3, float power4){
+        double revs = distanceCM/CIRCUMFERENCE;
+        int ticksToRun = (int)(revs * ENCODER_TICK);
         resetEncoder();
+        runEncoder(true);
+        h.FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        h.FRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        h.BLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        h.BRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        h.FLMotor.setTargetPosition(ticksToRun);
+        h.FRMotor.setTargetPosition(ticksToRun);
+        h.BLMotor.setTargetPosition(ticksToRun);
+        h.BRMotor.setTargetPosition(ticksToRun);
+        h.FLMotor.setPower(power1);
+        h.FRMotor.setPower(power2);
+        h.BLMotor.setPower(power3);
+        h.BRMotor.setPower(power4);
+        while (h.FLMotor.isBusy() && h.FRMotor.isBusy() && h.BLMotor.isBusy() && h.BRMotor.isBusy()){
+            //This line was intentionally left blank
+        }
+        stopMotors();
+    }
+    private void runToPos(int distanceCM, float power){
+        double revs = distanceCM/CIRCUMFERENCE;
+        int ticksToRun = (int)(revs * ENCODER_TICK);
+        resetEncoder();
+        runEncoder(true);
         h.FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         h.FRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         h.BLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -100,10 +168,9 @@ public class WABOTAutonomous extends LinearOpMode {
             //This line was intentionally left blank
         }
         stopMotors();
-        runEncoder(false);
     }
 
-    // Set's encoder values to zero
+    // Sets encoder values to zero
     private void resetEncoder(){
         h.FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         h.FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -141,23 +208,18 @@ public class WABOTAutonomous extends LinearOpMode {
         h.BRMotor.setPower(0);
     }
 
-    private void strafe (int direction, float power){
-        runEncoder(true);
-        if(direction == -1){
-            h.FLMotor.setPower(-power);
-            h.BRMotor.setPower(-power);
-            h.FRMotor.setPower(power);
-            h.BLMotor.setPower(power);
-        } else if (direction == 1){
-            h.FLMotor.setPower(power);
-            h.BRMotor.setPower(power);
-            h.FRMotor.setPower(-power);
-            h.BLMotor.setPower(-power);
+    // Strafes based on power and distance (NOTE: Negative distance is allowed!)
+    private void strafe (int distanceCM, float power){
+        if(distanceCM < 0){
+            distanceCM *= -1;
+            runToPos(distanceCM, -power, power, power,-power);
+        } else if (distanceCM > 0){
+            runToPos(distanceCM, power, -power, -power,power);
         }
     }
 
+    // Turns robot
     private void turn (int direction, float power){
-        runEncoder(true);
         if(direction == -1){
             h.FLMotor.setPower(-power);
             h.BRMotor.setPower(power);
@@ -171,6 +233,18 @@ public class WABOTAutonomous extends LinearOpMode {
         }
     }
 
+    // Runs Vuforia
+    private boolean runVuforia(){
+        for(VuforiaTrackable vuMarks : allTrackables){
+            if(((VuforiaTrackableDefaultListener)vuMarks.getListener()).isVisible()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    // Usable is there is a gyro installed
     /*private void turnByDegree (int degree, float power) {
 
         // find new angle to rotate to

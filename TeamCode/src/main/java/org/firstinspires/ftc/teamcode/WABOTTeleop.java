@@ -1,3 +1,5 @@
+package org.firstinspires.ftc.teamcode;
+
 /*
  * Wright Angle Robotics #6427 2019-2020
  *
@@ -16,6 +18,9 @@ import com.qualcomm.robotcore.util.Range;
 public class  WABOTTeleop extends OpMode {
     // Declare OpMode members.
     WABOTHardware h = new WABOTHardware(hardwareMap);
+
+    // Constant
+    private final double PRECISION_SPEED_MODIFIER = 0.5;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -39,7 +44,7 @@ public class  WABOTTeleop extends OpMode {
      */
     @Override
     public void start() {
-        runtime.reset();
+
     }
 
     /*
