@@ -74,13 +74,23 @@ public class PWABOTTeleop extends OpMode {
      */
     @Override
     public void loop(){
-        double leftStickY = gamepad1.left_stick_y;
-        double rightStickY = -gamepad1.right_stick_y;
+        double leftStickY = -gamepad1.left_stick_y;
+        double rightStickY = gamepad1.right_stick_y;
 
         FLMotor.setPower(leftStickY);
         FRMotor.setPower(rightStickY);
         BLMotor.setPower(leftStickY);
         BRMotor.setPower(rightStickY);
+
+        int rot = gyro.getHeading();
+        while(rot > 180){
+            rot -= (2*(rot-180));
+
+            if(rot < 0){
+                rot *= -1;
+            }
+        }
+        telemetry.addData("GYRO: ", rot);
     }
 
     /*

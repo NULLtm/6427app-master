@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -12,14 +13,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
-@Autonomous(name="WABOTAutonomous", group="WABOT")
+@Autonomous(name="PWABOTAutonomous", group="WABOT")
 public class PWABOTAutonomous extends LinearOpMode {
 
     // This provides the tick count for each rotation of an encoder, it's helpful for using run to position, 10CM DIAMETER
-    private final int ENCODER_TICK = 1440;
+    private final int ENCODER_TICK = 1680;
 
     // NOTE: Diameter is dependent on wheels!
-    private final int DIAMETER = 10;
+    private final double DIAMETER = 10.12;
 
     // This value is the distance of 1 rev of the wheels measured in CM!!!!
     private final double CIRCUMFERENCE = 2*Math.PI*DIAMETER;
@@ -57,6 +58,11 @@ public class PWABOTAutonomous extends LinearOpMode {
         touch = hardwareMap.get(TouchSensor.class, "touch");
         gyro = hardwareMap.get(GyroSensor.class, "gyro");
 
+        FLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        BLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        FRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        BRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         telemetry.addLine("Hardware Map Complete!");
         telemetry.update();
 
@@ -68,9 +74,9 @@ public class PWABOTAutonomous extends LinearOpMode {
         telemetry.addLine("Activating Vuforia...");
         telemetry.update();
 
-        vuforia = new WABOTVuforia(VUFORIA_KEY, CAMERA_DIRECTION);
+        //vuforia = new WABOTVuforia(VUFORIA_KEY, CAMERA_DIRECTION);
 
-        vuforia.activate();
+        //vuforia.activate();
 
         // REST OF THE SET UP HERE!
 
@@ -85,9 +91,15 @@ public class PWABOTAutonomous extends LinearOpMode {
 
         waitForStart();
 
+        runToPos(50, 0.5f);
 
+        //sleep(500);
 
+        //turnByDegree(90, 0.4f);
 
+        //sleep(500);
+
+        //runToPos(10, 0.3f);
     }
 
 
@@ -140,6 +152,10 @@ public class PWABOTAutonomous extends LinearOpMode {
         FRMotor.setTargetPosition(ticksToRun);
         BLMotor.setTargetPosition(ticksToRun);
         BRMotor.setTargetPosition(ticksToRun);
+        FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        FRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        BRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         linearDrive(power);
         while (FLMotor.isBusy() && FRMotor.isBusy() && BLMotor.isBusy() && BRMotor.isBusy()){
             //This line was intentionally left blank
@@ -239,36 +255,19 @@ public class PWABOTAutonomous extends LinearOpMode {
         float currentPower = power;
 
         // find new angle to rotate to
-        double turnTo = degree + gyro.getHeading();
-
-        // convert new angle into our "gyro"'s scope
-        while(turnTo > 180){
-            turnTo -= (2*(turnTo-180));
-
-            if(turnTo < 0){
-                turnTo *= -1;
-            }
-        }
+        double turnTo = convertedHeading(degree + gyro.getHeading());
 
         // if to the right, turn right, vise versa
-        if (gyro.getHeading() < turnTo) {
-            while (gyro.getHeading() < turnTo) {
+        if (convertedHeading(gyro.getHeading()) < turnTo) {
+            while (convertedHeading(gyro.getHeading()) < turnTo) {
 
-                double difference = turnTo - gyro.getHeading();
+                double difference = turnTo - convertedHeading(gyro.getHeading());
 
-                FLMotor.setPower(-currentPower);
-                FRMotor.setPower(currentPower);
-                BLMotor.setPower(-currentPower);
-                BRMotor.setPower(currentPower);
+                telemetry.addData("Difference: ", difference);
+                telemetry.addData("Heading: ", convertedHeading(gyro.getHeading()));
+                telemetry.addData("To Heading: ", turnTo);
+                telemetry.update();
 
-                if(difference < 3.9){
-                    currentPower *= Math.pow(1.2, difference) - 1;
-                }
-            }
-        } else if (gyro.getHeading() > turnTo) {
-            while (gyro.getHeading() > turnTo) {
-
-                double difference = gyro.getHeading() - turnTo;
 
                 FLMotor.setPower(currentPower);
                 FRMotor.setPower(-currentPower);
@@ -279,9 +278,41 @@ public class PWABOTAutonomous extends LinearOpMode {
                     currentPower *= Math.pow(1.2, difference) - 1;
                 }
             }
+        } else if (convertedHeading(gyro.getHeading()) > turnTo) {
+            while (convertedHeading(gyro.getHeading()) > turnTo) {
+
+                double difference = convertedHeading(gyro.getHeading()) - turnTo;
+
+                telemetry.addData("Difference: ", difference);
+                telemetry.addData("Heading: ", convertedHeading(gyro.getHeading()));
+                telemetry.addData("To Heading: ", turnTo);
+                telemetry.update();
+
+                FLMotor.setPower(-currentPower);
+                FRMotor.setPower(currentPower);
+                BLMotor.setPower(-currentPower);
+                BRMotor.setPower(currentPower);
+
+                if(difference < 3.9){
+                    currentPower *= Math.pow(1.2, difference) - 1;
+                }
+            }
         }
 
         stopMotors();
+    }
+
+    public int convertedHeading(int h){
+        int heading = h;
+        while(heading > 180){
+            heading -= (2*(heading-180));
+
+            if(heading < 0){
+                heading *= -1;
+            }
+        }
+
+        return heading;
     }
 
 }
