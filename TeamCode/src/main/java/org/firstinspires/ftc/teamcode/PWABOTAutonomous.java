@@ -2,18 +2,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
-@Autonomous(name="PWABOTAutonomous", group="WABOT")
+@Autonomous(name="PWABOTAutonomous", group="PWABOT")
 public class PWABOTAutonomous extends LinearOpMode {
 
     // This provides the tick count for each rotation of an encoder, it's helpful for using run to position, 10CM DIAMETER
@@ -25,21 +21,12 @@ public class PWABOTAutonomous extends LinearOpMode {
     // This value is the distance of 1 rev of the wheels measured in CM!!!!
     private final double CIRCUMFERENCE = 2*Math.PI*DIAMETER;
 
-    //private WABOTHardware h;
-
-    public DcMotor FLMotor;
-    public DcMotor FRMotor;
-    public DcMotor BLMotor;
-    public DcMotor BRMotor;
-    public ColorSensor color;
-    public TouchSensor touch;
-    public OpticalDistanceSensor ods;
-    public GyroSensor gyro;
-
     private final String VUFORIA_KEY = "AQc7P77/////AAAAGRkj9xpwbUV3lGEfqxdnuDCJ/2Rml7cEF7R7SqndRsU6cegdDxLs9sSsk8x5AqituFBD6dCrCZFJB/P4+tc3O3uooja7zTjZ+knDbMYmJq7t35B0ZSRUp84N0e7bkiDq+rGvM7qWl7rOMCJL0tN8CPXDL843WleEAUrvMl0Ba5jnAz8ZX4UTpk+/8e3Hz1F4s/F7/VjkJejp9JbPDEYdvwMOwwFedcAumO+NTZfe5mWqFY2MBBwLJi6h6SZ1g4a7qWThAorw0G0AZK0WiIWYiQVzPLaKTiq8jEKAY9lxSFon02LXkGtaLi6X5krlNiiacNQcSYSj9Y+6oxCUGH0zUvBZgpbG5tKQJqzyovqqP5UT";
     private final VuforiaLocalizer.CameraDirection CAMERA_DIRECTION = FRONT;
 
     private WABOTVuforia vuforia;
+
+    private PWABOTHardware h;
 
     @Override
     public void runOpMode() {
@@ -49,19 +36,7 @@ public class PWABOTAutonomous extends LinearOpMode {
         telemetry.addLine("Loading Robot... Please Wait");
         telemetry.update();
 
-        FLMotor = hardwareMap.get(DcMotor.class, "FLMotor");
-        FRMotor = hardwareMap.get(DcMotor.class, "FRMotor");
-        BLMotor = hardwareMap.get(DcMotor.class, "BLMotor");
-        BRMotor = hardwareMap.get(DcMotor.class, "BRMotor");
-        ods = hardwareMap.get(OpticalDistanceSensor.class, "ods");
-        color = hardwareMap.get(ColorSensor.class, "color");
-        touch = hardwareMap.get(TouchSensor.class, "touch");
-        gyro = hardwareMap.get(GyroSensor.class, "gyro");
-
-        FLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        BLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        FRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        BRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        h = new PWABOTHardware(hardwareMap);
 
         telemetry.addLine("Hardware Map Complete!");
         telemetry.update();
@@ -74,15 +49,15 @@ public class PWABOTAutonomous extends LinearOpMode {
         telemetry.addLine("Activating Vuforia...");
         telemetry.update();
 
-        //vuforia = new WABOTVuforia(VUFORIA_KEY, CAMERA_DIRECTION);
+        vuforia = new WABOTVuforia(VUFORIA_KEY, CAMERA_DIRECTION, hardwareMap, true);
 
-        //vuforia.activate();
+        vuforia.activate();
 
         // REST OF THE SET UP HERE!
 
-        gyro.calibrate();
+        h.gyro.calibrate();
 
-        while(gyro.isCalibrating()){
+        while(h.gyro.isCalibrating()){
             // Left blank
         }
 
@@ -91,19 +66,21 @@ public class PWABOTAutonomous extends LinearOpMode {
 
         waitForStart();
 
-        runToPos(50, 0.5f);
+        while(vuforia.run() == null){
+            linearDrive(0.5f);
+        }
 
-        //sleep(500);
+        stopMotors();
 
-        //turnByDegree(90, 0.4f);
+        sleep(1500);
 
-        //sleep(500);
+        turnByDegree(-90, 0.4f);
 
-        //runToPos(10, 0.3f);
+        sleep(1500);
+
+        runToPos(100, 0.5f);
+
     }
-
-
-
 
     // Uses encoders to move a specific distance away given powers for each motor
     private void runToPos(int distanceCM, float power1, float power2, float power3, float power4){
@@ -111,19 +88,19 @@ public class PWABOTAutonomous extends LinearOpMode {
         int ticksToRun = (int)(revs * ENCODER_TICK);
         resetEncoder();
         runEncoder(true);
-        FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FLMotor.setTargetPosition(ticksToRun);
-        FRMotor.setTargetPosition(ticksToRun);
-        BLMotor.setTargetPosition(ticksToRun);
-        BRMotor.setTargetPosition(ticksToRun);
-        FLMotor.setPower(power1);
-        FRMotor.setPower(power2);
-        BLMotor.setPower(power3);
-        BRMotor.setPower(power4);
-        while (FLMotor.isBusy() && FRMotor.isBusy() && BLMotor.isBusy() && BRMotor.isBusy()){
+        h.FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        h.FRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        h.BLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        h.BRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        h.FLMotor.setTargetPosition(ticksToRun);
+        h.FRMotor.setTargetPosition(ticksToRun);
+        h.BLMotor.setTargetPosition(ticksToRun);
+        h.BRMotor.setTargetPosition(ticksToRun);
+        h.FLMotor.setPower(power1);
+        h.FRMotor.setPower(power2);
+        h.BLMotor.setPower(power3);
+        h.BRMotor.setPower(power4);
+        while (h.FLMotor.isBusy() && h.FRMotor.isBusy() && h.BLMotor.isBusy() && h.BRMotor.isBusy()){
             //This line was intentionally left blank
         }
         stopMotors();
@@ -144,20 +121,20 @@ public class PWABOTAutonomous extends LinearOpMode {
         int ticksToRun = (int)(revs * ENCODER_TICK);
         resetEncoder();
         runEncoder(true);
-        FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FLMotor.setTargetPosition(ticksToRun);
-        FRMotor.setTargetPosition(ticksToRun);
-        BLMotor.setTargetPosition(ticksToRun);
-        BRMotor.setTargetPosition(ticksToRun);
-        FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        FRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        BRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        h.FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        h.FRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        h.BLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        h.BRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        h.FLMotor.setTargetPosition(ticksToRun);
+        h.FRMotor.setTargetPosition(ticksToRun);
+        h.BLMotor.setTargetPosition(ticksToRun);
+        h.BRMotor.setTargetPosition(ticksToRun);
+        h.FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        h.BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        h.FRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        h.BRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         linearDrive(power);
-        while (FLMotor.isBusy() && FRMotor.isBusy() && BLMotor.isBusy() && BRMotor.isBusy()){
+        while (h.FLMotor.isBusy() && h.FRMotor.isBusy() && h.BLMotor.isBusy() && h.BRMotor.isBusy()){
             //This line was intentionally left blank
         }
         stopMotors();
@@ -172,10 +149,10 @@ public class PWABOTAutonomous extends LinearOpMode {
 
     // Sets encoder values to zero
     private void resetEncoder(){
-        FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        BLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        BRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        h.FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        h.FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        h.BLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        h.BRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
 
@@ -188,15 +165,15 @@ public class PWABOTAutonomous extends LinearOpMode {
     // Switch between non-encoder and encoder modes of the motors
     private void runEncoder(boolean withEncoder){
         if(withEncoder) {
-            FLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            FRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            h.FLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            h.FRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            h.BLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            h.BRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }else{
-            FLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            FRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            BLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            BRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            h.FLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            h.FRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            h.BLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            h.BRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
     }
@@ -206,17 +183,17 @@ public class PWABOTAutonomous extends LinearOpMode {
 
 
     private void linearDrive(float power){
-        FLMotor.setPower(power);
-        FRMotor.setPower(power);
-        BLMotor.setPower(power);
-        BRMotor.setPower(power);
+        h.FLMotor.setPower(power);
+        h.FRMotor.setPower(power);
+        h.BLMotor.setPower(power);
+        h.BRMotor.setPower(power);
     }
 
     private void stopMotors() {
-        FLMotor.setPower(0);
-        FRMotor.setPower(0);
-        BLMotor.setPower(0);
-        BRMotor.setPower(0);
+        h.FLMotor.setPower(0);
+        h.FRMotor.setPower(0);
+        h.BLMotor.setPower(0);
+        h.BRMotor.setPower(0);
     }
 
 
@@ -237,15 +214,15 @@ public class PWABOTAutonomous extends LinearOpMode {
     // Turns robot
     private void turn (int direction, float power){
         if(direction == -1){
-            FLMotor.setPower(-power);
-            BRMotor.setPower(power);
-            FRMotor.setPower(power);
-            BLMotor.setPower(-power);
+            h.FLMotor.setPower(-power);
+            h.BRMotor.setPower(power);
+            h.FRMotor.setPower(power);
+            h.BLMotor.setPower(-power);
         } else if (direction == 1){
-            FLMotor.setPower(power);
-            BRMotor.setPower(-power);
-            FRMotor.setPower(-power);
-            BLMotor.setPower(power);
+            h.FLMotor.setPower(power);
+            h.BRMotor.setPower(-power);
+            h.FRMotor.setPower(-power);
+            h.BLMotor.setPower(power);
         }
     }
 
@@ -253,48 +230,57 @@ public class PWABOTAutonomous extends LinearOpMode {
     private void turnByDegree (int degree, float power) {
 
         float currentPower = power;
+        boolean right;
+        double turnTo;
 
-        // find new angle to rotate to
-        double turnTo = convertedHeading(degree + gyro.getHeading());
-
+        if(degree < 0){
+            right = false;
+            turnTo = convertedHeading((degree*-1) + h.gyro.getHeading());
+        } else {
+            right = true;
+            turnTo = convertedHeading(degree + h.gyro.getHeading());
+        }
         // if to the right, turn right, vise versa
-        if (convertedHeading(gyro.getHeading()) < turnTo) {
-            while (convertedHeading(gyro.getHeading()) < turnTo) {
+        if (right) {
+            while (convertedHeading(h.gyro.getHeading()) < turnTo) {
 
-                double difference = turnTo - convertedHeading(gyro.getHeading());
+                double difference = turnTo - convertedHeading(h.gyro.getHeading());
 
                 telemetry.addData("Difference: ", difference);
-                telemetry.addData("Heading: ", convertedHeading(gyro.getHeading()));
+                telemetry.addData("Heading: ", convertedHeading(h.gyro.getHeading()));
                 telemetry.addData("To Heading: ", turnTo);
                 telemetry.update();
 
 
-                FLMotor.setPower(currentPower);
-                FRMotor.setPower(-currentPower);
-                BLMotor.setPower(currentPower);
-                BRMotor.setPower(-currentPower);
+                h.FLMotor.setPower(currentPower);
+                h.FRMotor.setPower(-currentPower);
+                h.BLMotor.setPower(currentPower);
+                h.BRMotor.setPower(-currentPower);
 
                 if(difference < 3.9){
                     currentPower *= Math.pow(1.2, difference) - 1;
                 }
             }
-        } else if (convertedHeading(gyro.getHeading()) > turnTo) {
-            while (convertedHeading(gyro.getHeading()) > turnTo) {
+        } else if (!right) {
+            while (convertedHeading(h.gyro.getHeading()) < turnTo) {
 
-                double difference = convertedHeading(gyro.getHeading()) - turnTo;
+                double difference = turnTo - convertedHeading(h.gyro.getHeading());
 
                 telemetry.addData("Difference: ", difference);
-                telemetry.addData("Heading: ", convertedHeading(gyro.getHeading()));
+                telemetry.addData("Heading: ", convertedHeading(h.gyro.getHeading()));
                 telemetry.addData("To Heading: ", turnTo);
                 telemetry.update();
 
-                FLMotor.setPower(-currentPower);
-                FRMotor.setPower(currentPower);
-                BLMotor.setPower(-currentPower);
-                BRMotor.setPower(currentPower);
+                h.FLMotor.setPower(-currentPower);
+                h.FRMotor.setPower(currentPower);
+                h.BLMotor.setPower(-currentPower);
+                h.BRMotor.setPower(currentPower);
 
                 if(difference < 3.9){
-                    currentPower *= Math.pow(1.2, difference) - 1;
+                    currentPower = currentPower/2;
+                }
+                if(difference < 1){
+                    currentPower = currentPower/4;
                 }
             }
         }
@@ -314,5 +300,4 @@ public class PWABOTAutonomous extends LinearOpMode {
 
         return heading;
     }
-
 }

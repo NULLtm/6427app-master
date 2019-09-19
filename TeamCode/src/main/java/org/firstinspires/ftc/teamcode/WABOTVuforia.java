@@ -10,6 +10,8 @@ NOTE: Setup for 2018-2019 Rover Ruckus ATM
 
  */
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -26,17 +28,23 @@ public class WABOTVuforia {
     List<VuforiaTrackable> allTrackables;
 
     // Constructor
-    public WABOTVuforia(String licenseKey, VuforiaLocalizer.CameraDirection camDir){
-        init(licenseKey);
+    public WABOTVuforia(String licenseKey, VuforiaLocalizer.CameraDirection camDir, HardwareMap m, boolean showScreen){
+        init(licenseKey, showScreen, camDir, m);
     }
 
     // Initializes Vuforia Engine
-    public void init(String key){
+    public void init(String key, boolean show, VuforiaLocalizer.CameraDirection camDir, HardwareMap map){
+        VuforiaLocalizer.Parameters parameters;
+        if(show){
+            int cameraMonitorViewId = map.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", map.appContext.getPackageName());
+            parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        } else {
+            parameters = new VuforiaLocalizer.Parameters();
+        }
 
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
+        // https://developer.vuforia.com/license-manager
         parameters.vuforiaLicenseKey = key;
-        parameters.cameraDirection   = parameters.cameraDirection.BACK;
+        parameters.cameraDirection   = camDir;
 
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
         targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
@@ -78,12 +86,12 @@ public class WABOTVuforia {
     }
 
     // This method scans for objects ONCE when called
-    public boolean run(){
-        for(VuforiaTrackable vuMarks : allTrackables){
-            if(((VuforiaTrackableDefaultListener)vuMarks.getListener()).isVisible()){
-                return true;
+    public String run() {
+        for (VuforiaTrackable vuMarks : allTrackables) {
+            if (((VuforiaTrackableDefaultListener) vuMarks.getListener()).isVisible()) {
+                return vuMarks.getName();
             }
         }
-        return false;
+        return null;
     }
 }
