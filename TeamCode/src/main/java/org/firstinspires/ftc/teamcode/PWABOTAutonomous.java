@@ -19,7 +19,7 @@ public class PWABOTAutonomous extends LinearOpMode {
     private final double DIAMETER = 10.12;
 
     // This value is the distance of 1 rev of the wheels measured in CM!!!!
-    private final double CIRCUMFERENCE = 2*Math.PI*DIAMETER;
+    private final double CIRCUMFERENCE = Math.PI*DIAMETER;
 
     private final String VUFORIA_KEY = "AQc7P77/////AAAAGRkj9xpwbUV3lGEfqxdnuDCJ/2Rml7cEF7R7SqndRsU6cegdDxLs9sSsk8x5AqituFBD6dCrCZFJB/P4+tc3O3uooja7zTjZ+knDbMYmJq7t35B0ZSRUp84N0e7bkiDq+rGvM7qWl7rOMCJL0tN8CPXDL843WleEAUrvMl0Ba5jnAz8ZX4UTpk+/8e3Hz1F4s/F7/VjkJejp9JbPDEYdvwMOwwFedcAumO+NTZfe5mWqFY2MBBwLJi6h6SZ1g4a7qWThAorw0G0AZK0WiIWYiQVzPLaKTiq8jEKAY9lxSFon02LXkGtaLi6X5krlNiiacNQcSYSj9Y+6oxCUGH0zUvBZgpbG5tKQJqzyovqqP5UT";
     private final VuforiaLocalizer.CameraDirection CAMERA_DIRECTION = FRONT;
@@ -66,20 +66,7 @@ public class PWABOTAutonomous extends LinearOpMode {
 
         waitForStart();
 
-        while(vuforia.run() == null){
-            linearDrive(0.5f);
-        }
-
-        stopMotors();
-
-        sleep(1500);
-
-        turnByDegree(-90, 0.4f);
-
-        sleep(1500);
-
-        runToPos(100, 0.5f);
-
+        turnByDegree(90, 0.4f);
     }
 
     // Uses encoders to move a specific distance away given powers for each motor
@@ -165,6 +152,10 @@ public class PWABOTAutonomous extends LinearOpMode {
     // Switch between non-encoder and encoder modes of the motors
     private void runEncoder(boolean withEncoder){
         if(withEncoder) {
+            h.FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            h.FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            h.BLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            h.BRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             h.FLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             h.FRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             h.BLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -226,6 +217,22 @@ public class PWABOTAutonomous extends LinearOpMode {
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Usable is there is a gyro installed
     private void turnByDegree (int degree, float power) {
 
@@ -248,7 +255,7 @@ public class PWABOTAutonomous extends LinearOpMode {
 
                 telemetry.addData("Difference: ", difference);
                 telemetry.addData("Heading: ", convertedHeading(h.gyro.getHeading()));
-                telemetry.addData("To Heading: ", turnTo);
+                telemetry.addData("CurrentPower: ", currentPower);
                 telemetry.update();
 
 
@@ -257,9 +264,16 @@ public class PWABOTAutonomous extends LinearOpMode {
                 h.BLMotor.setPower(currentPower);
                 h.BRMotor.setPower(-currentPower);
 
-                if(difference < 3.9){
-                    currentPower *= Math.pow(1.2, difference) - 1;
+                if(difference < 50 && difference >= 20){
+                    currentPower = power - 0.1f;
                 }
+                if(difference < 20){
+                    currentPower = power - 0.3f;
+                }
+
+                //if(difference < 3.9){
+                //    currentPower *= Math.pow(1.2, difference) - 1;
+                //}
             }
         } else if (!right) {
             while (convertedHeading(h.gyro.getHeading()) < turnTo) {
@@ -268,7 +282,7 @@ public class PWABOTAutonomous extends LinearOpMode {
 
                 telemetry.addData("Difference: ", difference);
                 telemetry.addData("Heading: ", convertedHeading(h.gyro.getHeading()));
-                telemetry.addData("To Heading: ", turnTo);
+                telemetry.addData("CurrentPower: ", currentPower);
                 telemetry.update();
 
                 h.FLMotor.setPower(-currentPower);
@@ -276,17 +290,39 @@ public class PWABOTAutonomous extends LinearOpMode {
                 h.BLMotor.setPower(-currentPower);
                 h.BRMotor.setPower(currentPower);
 
-                if(difference < 3.9){
-                    currentPower = currentPower/2;
+                if(difference < 50 && difference >= 20){
+                    currentPower = power - 0.1f;
                 }
-                if(difference < 1){
-                    currentPower = currentPower/4;
+                if(difference < 20){
+                    currentPower = power - 0.3f;
                 }
             }
         }
 
         stopMotors();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public int convertedHeading(int h){
         int heading = h;
