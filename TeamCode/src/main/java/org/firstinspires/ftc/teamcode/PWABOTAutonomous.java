@@ -264,16 +264,12 @@ public class PWABOTAutonomous extends LinearOpMode {
                 h.BLMotor.setPower(currentPower);
                 h.BRMotor.setPower(-currentPower);
 
-                if(difference < 50 && difference >= 20){
+                if(difference < 15 && difference >= 5){
                     currentPower = power - 0.1f;
                 }
-                if(difference < 20){
+                if(difference < 5){
                     currentPower = power - 0.3f;
                 }
-
-                //if(difference < 3.9){
-                //    currentPower *= Math.pow(1.2, difference) - 1;
-                //}
             }
         } else if (!right) {
             while (convertedHeading(h.gyro.getHeading()) < turnTo) {
@@ -290,10 +286,10 @@ public class PWABOTAutonomous extends LinearOpMode {
                 h.BLMotor.setPower(-currentPower);
                 h.BRMotor.setPower(currentPower);
 
-                if(difference < 50 && difference >= 20){
+                if(difference < 15 && difference >= 5){
                     currentPower = power - 0.1f;
                 }
-                if(difference < 20){
+                if(difference < 5){
                     currentPower = power - 0.3f;
                 }
             }
