@@ -1,19 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class WABOTHardware {
     private HardwareMap hardwareMap;
@@ -37,14 +27,14 @@ public class WABOTHardware {
         FRMotor = hardwareMap.get(DcMotor.class, "FRMotor");
         BLMotor = hardwareMap.get(DcMotor.class, "BLMotor");
         BRMotor = hardwareMap.get(DcMotor.class, "BRMotor");
-        leftLatch = hardwareMap.get(Servo.class, "leftLatch");
-        rightLatch = hardwareMap.get(Servo.class, "rightLatch");
+        //leftLatch = hardwareMap.get(Servo.class, "leftLatch");
+        //rightLatch = hardwareMap.get(Servo.class, "rightLatch");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         BRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        BLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         FRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        FLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 }

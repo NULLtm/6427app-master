@@ -5,16 +5,15 @@ package org.firstinspires.ftc.teamcode;
  *
  */
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@Disabled
+
 @TeleOp(name="WABOTTeleop", group="WABOT")
 //@Disabled
 public class  WABOTTeleop extends OpMode {
     // Declare OpMode members.
-    WABOTHardware h = new WABOTHardware(hardwareMap);
+    WABOTHardware h;
 
     // Constant
     private final double PRECISION_SPEED_MODIFIER = 0.5;
@@ -26,6 +25,7 @@ public class  WABOTTeleop extends OpMode {
     public void init() {
         final double PRECISION_SPEED_MODIFIER = 0.5;
         // Tell the driver that initialization is complete.
+        h = new WABOTHardware(hardwareMap);
         telemetry.addData("Status", "Initialized");
     }
 
@@ -49,14 +49,14 @@ public class  WABOTTeleop extends OpMode {
      */
     @Override
     public void loop() {
-        if(gamepad2.dpad_down){
-            h.leftLatch.setPosition(0.8);
-            h.rightLatch.setPosition(0.8);
-        }
-        if(gamepad2.dpad_up){
-            h.leftLatch.setPosition(0);
-            h.rightLatch.setPosition(0);
-        }
+        //if(gamepad2.dpad_down){
+        //    h.leftLatch.setPosition(0.8);
+        //    h.rightLatch.setPosition(0.8);
+        //}
+        //if(gamepad2.dpad_up){
+        //    h.leftLatch.setPosition(0);
+        //    h.rightLatch.setPosition(0);
+        //}
 
         // (!) (!) (!) HOLONOMIC DRIVE DO NOT TOUCH (!) (!) (!)
         double leftStickX = -gamepad1.right_stick_x;

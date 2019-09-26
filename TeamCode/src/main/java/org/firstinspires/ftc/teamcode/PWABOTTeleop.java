@@ -9,24 +9,13 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 @TeleOp(name="WABOTPracticeTeleop", group="WABOT")
 //@Disabled
 public class PWABOTTeleop extends OpMode {
 
-    public DcMotor FLMotor;
-    public DcMotor FRMotor;
-    public DcMotor BLMotor;
-    public DcMotor BRMotor;
-    public ColorSensor color;
-    public TouchSensor touch;
-    public OpticalDistanceSensor ods;
-    public GyroSensor gyro;
+    public PWABOTHardware h;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -35,18 +24,21 @@ public class PWABOTTeleop extends OpMode {
     public void init() {
         // Tell the driver that initialization is complete.
         telemetry.addData("Status:", "Initializing");
-        FLMotor = hardwareMap.get(DcMotor.class, "FLMotor");
-        FRMotor = hardwareMap.get(DcMotor.class, "FRMotor");
-        BLMotor = hardwareMap.get(DcMotor.class, "BLMotor");
-        BRMotor = hardwareMap.get(DcMotor.class, "BRMotor");
-        ods = hardwareMap.get(OpticalDistanceSensor.class, "ods");
-        color = hardwareMap.get(ColorSensor.class, "color");
-        touch = hardwareMap.get(TouchSensor.class, "touch");
-        gyro = hardwareMap.get(GyroSensor.class, "gyro");
 
-        gyro.calibrate();
+        h = new PWABOTHardware(hardwareMap);
 
-        while(gyro.isCalibrating()){
+        h.FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        h.FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        h.BLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        h.BRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        h.FLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        h.FRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        h.BLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        h.BRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        h.gyro.calibrate();
+
+        while(h.gyro.isCalibrating()){
             // Left blank
         }
 
@@ -74,23 +66,13 @@ public class PWABOTTeleop extends OpMode {
      */
     @Override
     public void loop(){
-        double leftStickY = -gamepad1.left_stick_y;
+        double leftStickY = gamepad1.left_stick_y;
         double rightStickY = gamepad1.right_stick_y;
 
-        FLMotor.setPower(leftStickY);
-        FRMotor.setPower(rightStickY);
-        BLMotor.setPower(leftStickY);
-        BRMotor.setPower(rightStickY);
-
-        int rot = gyro.getHeading();
-        while(rot > 180){
-            rot -= (2*(rot-180));
-
-            if(rot < 0){
-                rot *= -1;
-            }
-        }
-        telemetry.addData("GYRO: ", rot);
+        h.FLMotor.setPower(leftStickY);
+        h.FRMotor.setPower(rightStickY);
+        h.BLMotor.setPower(leftStickY);
+        h.BRMotor.setPower(rightStickY);
     }
 
     /*
@@ -99,5 +81,11 @@ public class PWABOTTeleop extends OpMode {
     @Override
     public void stop() {
         telemetry.addData("Status:", "Stopped");
+
+        h.FLMotor.setPower(0);
+        h.FRMotor.setPower(0);
+        h.BLMotor.setPower(0);
+        h.BRMotor.setPower(0);
+
     }
 }

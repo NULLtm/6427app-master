@@ -66,7 +66,24 @@ public class PWABOTAutonomous extends LinearOpMode {
 
         waitForStart();
 
+        runToPos(122, 0.4f);
+
+        sleep(1500);
+
+        telemetry.addLine("TURNING");
+        telemetry.update();
+
         turnByDegree(90, 0.4f);
+
+        sleep(1500);
+
+        while(vuforia.run() == null){
+            linearDrive(0.4f);
+        }
+
+        stopMotors();
+
+        sleep(1500);
     }
 
     // Uses encoders to move a specific distance away given powers for each motor
@@ -247,6 +264,9 @@ public class PWABOTAutonomous extends LinearOpMode {
             right = true;
             turnTo = convertedHeading(degree + h.gyro.getHeading());
         }
+
+        telemetry.addData("RIGHT?:", right);
+        telemetry.update();
         // if to the right, turn right, vise versa
         if (right) {
             while (convertedHeading(h.gyro.getHeading()) < turnTo) {
