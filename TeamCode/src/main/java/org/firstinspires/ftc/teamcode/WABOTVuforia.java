@@ -6,8 +6,6 @@ Official Wright Angles 2019-2020 Class
 
 This class contains vuforia code
 
-NOTE: Setup for 2018-2019 Rover Ruckus ATM
-
  */
 
 import com.qualcomm.robotcore.hardware.HardwareMap;

@@ -7,6 +7,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 
 @TeleOp(name="WABOTTeleop", group="WABOT")
@@ -26,6 +27,7 @@ public class  WABOTTeleop extends OpMode {
         final double PRECISION_SPEED_MODIFIER = 0.5;
         // Tell the driver that initialization is complete.
         h = new WABOTHardware(hardwareMap);
+        runEncoder(false);
         telemetry.addData("Status", "Initialized");
     }
 
@@ -58,7 +60,52 @@ public class  WABOTTeleop extends OpMode {
         //    h.rightLatch.setPosition(0);
         //}
 
-        // (!) (!) (!) HOLONOMIC DRIVE DO NOT TOUCH (!) (!) (!)
+        holoDrive();
+    }
+
+    /*
+     * Code to run ONCE after the driver hits STOP
+     */
+    @Override
+    public void stop() {
+        telemetry.addData("Status:", "Stopped");
+
+        h.FLMotor.setPower(0);
+        h.FRMotor.setPower(0);
+        h.BLMotor.setPower(0);
+        h.BRMotor.setPower(0);
+    }
+
+    private void runEncoder(boolean withEncoder){
+        if(withEncoder) {
+            h.FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            h.FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            h.BLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            h.BRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            h.FLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            h.FRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            h.BLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            h.BRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }else{
+            h.FLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            h.FRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            h.BLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            h.BRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+
+    }
+
+    private void tankDrive(){
+        double leftStickY = gamepad1.left_stick_y;
+        double rightStickY = gamepad1.right_stick_y;
+
+        h.FLMotor.setPower(leftStickY);
+        h.FRMotor.setPower(rightStickY);
+        h.BLMotor.setPower(leftStickY);
+        h.BRMotor.setPower(rightStickY);
+    }
+
+    private void holoDrive(){
         double leftStickX = -gamepad1.right_stick_x;
         double leftStickY = gamepad1.left_stick_y;
         double rightStickX = -gamepad1.left_stick_x;
@@ -84,14 +131,6 @@ public class  WABOTTeleop extends OpMode {
         h.FRMotor.setPower(v2);
         h.BLMotor.setPower(v3);
         h.BRMotor.setPower(v4);
-        // (!) (!) (!) HOLONOMIC DRIVE DO NOT TOUCH (!) (!) (!  )
-    }
-
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
-    @Override
-    public void stop() {
     }
 
 }

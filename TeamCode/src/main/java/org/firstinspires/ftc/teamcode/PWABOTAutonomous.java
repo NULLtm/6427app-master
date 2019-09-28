@@ -9,51 +9,85 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
+/**
+ * OFFICIAL AUTONOMOUS CODE
+ *
+ * WRIGHT ANGLE ROBOTICS (Skystone 2019-2020)
+ *
+ * Contributor:
+ * Owen Boseley (2016-2021)
+ *
+ * NOTES:
+ * - Anything marked with the comment (// DO NOT TOUCH) should not be touched xD
+ *
+ *
+ */
+
+
 @Autonomous(name="PWABOTAutonomous", group="PWABOT")
 public class PWABOTAutonomous extends LinearOpMode {
 
-    // This provides the tick count for each rotation of an encoder, it's helpful for using run to position, 10CM DIAMETER
+
+    // This provides the tick count for each rotation of an encoder, it's helpful for using run to position
     private final int ENCODER_TICK = 1680;
 
-    // NOTE: Diameter is dependent on wheels!
+    // NOTE: Measured in cm
     private final double DIAMETER = 10.12;
 
     // This value is the distance of 1 rev of the wheels measured in CM!!!!
     private final double CIRCUMFERENCE = Math.PI*DIAMETER;
 
+    // Parameters for initializing vuforia
     private final String VUFORIA_KEY = "AQc7P77/////AAAAGRkj9xpwbUV3lGEfqxdnuDCJ/2Rml7cEF7R7SqndRsU6cegdDxLs9sSsk8x5AqituFBD6dCrCZFJB/P4+tc3O3uooja7zTjZ+knDbMYmJq7t35B0ZSRUp84N0e7bkiDq+rGvM7qWl7rOMCJL0tN8CPXDL843WleEAUrvMl0Ba5jnAz8ZX4UTpk+/8e3Hz1F4s/F7/VjkJejp9JbPDEYdvwMOwwFedcAumO+NTZfe5mWqFY2MBBwLJi6h6SZ1g4a7qWThAorw0G0AZK0WiIWYiQVzPLaKTiq8jEKAY9lxSFon02LXkGtaLi6X5krlNiiacNQcSYSj9Y+6oxCUGH0zUvBZgpbG5tKQJqzyovqqP5UT";
     private final VuforiaLocalizer.CameraDirection CAMERA_DIRECTION = FRONT;
 
+    // Our custom vuforia object
     private WABOTVuforia vuforia;
 
+    // Hardware map object
     private PWABOTHardware h;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Initializing robot here!
     @Override
     public void runOpMode() {
 
         // Init of robot
 
-        telemetry.addLine("Loading Robot... Please Wait");
+        telemetry.addLine("READ ME --> !!!!UNTIL YOU SEE: \"READY\" DO NOT PRESS PLAY!!!!");
         telemetry.update();
 
         h = new PWABOTHardware(hardwareMap);
 
-        telemetry.addLine("Hardware Map Complete!");
+        telemetry.addLine("Status: Hardware Map");
         telemetry.update();
 
-        runEncoder(true);
+        runEncoder(false);
 
-        telemetry.addLine("Encoders Functioning");
-        telemetry.update();
-
-        telemetry.addLine("Activating Vuforia...");
+        telemetry.addLine("Status: Initializing Vuforia");
         telemetry.update();
 
         vuforia = new WABOTVuforia(VUFORIA_KEY, CAMERA_DIRECTION, hardwareMap, true);
 
-        vuforia.activate();
-
-        // REST OF THE SET UP HERE!
+        telemetry.addLine("Status: Calibrating Gyro");
+        telemetry.update();
 
         h.gyro.calibrate();
 
@@ -61,36 +95,57 @@ public class PWABOTAutonomous extends LinearOpMode {
             // Left blank
         }
 
-        telemetry.addLine("Init Complete! Ready to Go!");
+        vuforia.activate();
+
+        telemetry.addLine("Status: READY!");
         telemetry.update();
+
 
         waitForStart();
 
-        runToPos(122, 0.4f);
-
-        sleep(1500);
-
-        telemetry.addLine("TURNING");
-        telemetry.update();
-
-        turnByDegree(90, 0.4f);
-
-        sleep(1500);
-
-        while(vuforia.run() == null){
-            linearDrive(0.4f);
-        }
-
-        stopMotors();
-
-        sleep(1500);
+        run();
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Actual instructions for robot! All autonomous code goes here!!!
+    private void run(){
+        while (opModeIsActive()) {
+            driveStraight(0, 0.5);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Uses encoders to move a specific distance away given powers for each motor
-    private void runToPos(int distanceCM, float power1, float power2, float power3, float power4){
+    /*private void runToPos(int distanceCM, float power1, float power2, float power3, float power4){
         double revs = distanceCM/CIRCUMFERENCE;
         int ticksToRun = (int)(revs * ENCODER_TICK);
-        resetEncoder();
         runEncoder(true);
         h.FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         h.FRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -108,7 +163,8 @@ public class PWABOTAutonomous extends LinearOpMode {
             //This line was intentionally left blank
         }
         stopMotors();
-    }
+        runEncoder(false);
+    }*/
 
 
 
@@ -120,10 +176,15 @@ public class PWABOTAutonomous extends LinearOpMode {
 
 
 
+
+
+
+
+    // DO NOT TOUCH
+    // Robot moves some distance (CM) with a specified power applied
     private void runToPos(int distanceCM, float power){
         double revs = distanceCM/CIRCUMFERENCE;
         int ticksToRun = (int)(revs * ENCODER_TICK);
-        resetEncoder();
         runEncoder(true);
         h.FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         h.FRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -142,6 +203,7 @@ public class PWABOTAutonomous extends LinearOpMode {
             //This line was intentionally left blank
         }
         stopMotors();
+        runEncoder(false);
     }
 
 
@@ -151,13 +213,6 @@ public class PWABOTAutonomous extends LinearOpMode {
 
 
 
-    // Sets encoder values to zero
-    private void resetEncoder(){
-        h.FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        h.FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        h.BLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        h.BRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
 
 
 
@@ -166,6 +221,7 @@ public class PWABOTAutonomous extends LinearOpMode {
 
 
 
+    // DO NOT TOUCH
     // Switch between non-encoder and encoder modes of the motors
     private void runEncoder(boolean withEncoder){
         if(withEncoder) {
@@ -190,6 +246,18 @@ public class PWABOTAutonomous extends LinearOpMode {
 
 
 
+
+
+
+
+
+
+
+
+
+
+    // DO NOT TOUCH
+    // Runs motors at a specified power
     private void linearDrive(float power){
         h.FLMotor.setPower(power);
         h.FRMotor.setPower(power);
@@ -197,6 +265,22 @@ public class PWABOTAutonomous extends LinearOpMode {
         h.BRMotor.setPower(power);
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // DO NOT TOUCH
+    // Same as "linearDrive" but sets power to 0
     private void stopMotors() {
         h.FLMotor.setPower(0);
         h.FRMotor.setPower(0);
@@ -209,16 +293,42 @@ public class PWABOTAutonomous extends LinearOpMode {
 
 
 
+
+
+
+
+
+
+
+
+
+
+    // DO NOT TOUCH
+    // NOTE: Used only with mecanum wheels!
     // Strafes based on power and distance (NOTE: Negative distance is allowed!)
-    private void strafe (int distanceCM, float power){
+    /*private void strafe (int distanceCM, float power){
         if(distanceCM < 0){
             distanceCM *= -1;
             runToPos(distanceCM, -power, power, power,-power);
         } else if (distanceCM > 0){
             runToPos(distanceCM, power, -power, -power,power);
         }
-    }
+    }*/
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // DO NOT TOUCH
     // Turns robot
     private void turn (int direction, float power){
         if(direction == -1){
@@ -248,12 +358,46 @@ public class PWABOTAutonomous extends LinearOpMode {
 
 
 
+    // IN PROGRESS
+    // Maintains heading and adjusts if pushed
+    private void driveStraight(int targetHeading, double startSpeed){
+        int heading = h.gyro.getHeading();
+        if(heading > 180){
+            heading = heading - 360;
+        }
+
+        int difference = targetHeading - heading;
+        double power = difference/90.0;
+
+        h.FLMotor.setPower(startSpeed + power);
+        h.FRMotor.setPower(startSpeed - power);
+        h.BLMotor.setPower(startSpeed + power);
+        h.BRMotor.setPower(startSpeed - power);
+
+    }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // DO NOT TOUCH
     // Usable is there is a gyro installed
-    private void turnByDegree (int degree, float power) {
-
-        float currentPower = power;
+    private void turnByDegree (int degree) {
+        double currentPower = 1;
         boolean right;
         double turnTo;
 
@@ -265,8 +409,6 @@ public class PWABOTAutonomous extends LinearOpMode {
             turnTo = convertedHeading(degree + h.gyro.getHeading());
         }
 
-        telemetry.addData("RIGHT?:", right);
-        telemetry.update();
         // if to the right, turn right, vise versa
         if (right) {
             while (convertedHeading(h.gyro.getHeading()) < turnTo) {
@@ -284,11 +426,8 @@ public class PWABOTAutonomous extends LinearOpMode {
                 h.BLMotor.setPower(currentPower);
                 h.BRMotor.setPower(-currentPower);
 
-                if(difference < 15 && difference >= 5){
-                    currentPower = power - 0.1f;
-                }
-                if(difference < 5){
-                    currentPower = power - 0.3f;
+                if(difference < 12){
+                    currentPower = Math.pow(1.2, 0.3*difference) - 1;
                 }
             }
         } else if (!right) {
@@ -306,11 +445,8 @@ public class PWABOTAutonomous extends LinearOpMode {
                 h.BLMotor.setPower(-currentPower);
                 h.BRMotor.setPower(currentPower);
 
-                if(difference < 15 && difference >= 5){
-                    currentPower = power - 0.1f;
-                }
-                if(difference < 5){
-                    currentPower = power - 0.3f;
+                if(difference < 12){
+                    currentPower = Math.pow(1.2, 0.3*difference) - 1;
                 }
             }
         }
@@ -335,11 +471,8 @@ public class PWABOTAutonomous extends LinearOpMode {
 
 
 
-
-
-
-
-
+    // DO NOT TOUCH
+    // Used for "turn by degree" ONLY
     public int convertedHeading(int h){
         int heading = h;
         while(heading > 180){
@@ -349,7 +482,6 @@ public class PWABOTAutonomous extends LinearOpMode {
                 heading *= -1;
             }
         }
-
         return heading;
     }
 }

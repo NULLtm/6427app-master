@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name="WABOTPracticeTeleop", group="WABOT")
+@TeleOp(name="PWABOTTeleop", group="PWABOT")
 //@Disabled
 public class PWABOTTeleop extends OpMode {
 
@@ -27,20 +27,7 @@ public class PWABOTTeleop extends OpMode {
 
         h = new PWABOTHardware(hardwareMap);
 
-        h.FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        h.FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        h.BLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        h.BRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        h.FLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        h.FRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        h.BLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        h.BRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        h.gyro.calibrate();
-
-        while(h.gyro.isCalibrating()){
-            // Left blank
-        }
+        runEncoder(false);
 
         // Once this message prints, driver is allowed to press start!
         telemetry.addData("Status:", "Initialized");
@@ -66,13 +53,7 @@ public class PWABOTTeleop extends OpMode {
      */
     @Override
     public void loop(){
-        double leftStickY = gamepad1.left_stick_y;
-        double rightStickY = gamepad1.right_stick_y;
-
-        h.FLMotor.setPower(leftStickY);
-        h.FRMotor.setPower(rightStickY);
-        h.BLMotor.setPower(leftStickY);
-        h.BRMotor.setPower(rightStickY);
+        tankDrive();
     }
 
     /*
@@ -86,6 +67,34 @@ public class PWABOTTeleop extends OpMode {
         h.FRMotor.setPower(0);
         h.BLMotor.setPower(0);
         h.BRMotor.setPower(0);
+    }
 
+    private void runEncoder(boolean withEncoder){
+        if(withEncoder) {
+            h.FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            h.FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            h.BLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            h.BRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            h.FLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            h.FRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            h.BLMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            h.BRMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }else{
+            h.FLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            h.FRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            h.BLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            h.BRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+
+    }
+
+    private void tankDrive(){
+        double leftStickY = gamepad1.left_stick_y;
+        double rightStickY = gamepad1.right_stick_y;
+
+        h.FLMotor.setPower(leftStickY);
+        h.FRMotor.setPower(rightStickY);
+        h.BLMotor.setPower(leftStickY);
+        h.BRMotor.setPower(rightStickY);
     }
 }

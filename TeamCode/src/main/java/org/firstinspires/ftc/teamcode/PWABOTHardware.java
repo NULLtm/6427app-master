@@ -39,9 +39,9 @@ public class PWABOTHardware {
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        BRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        BLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        FRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        FLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        BRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        FRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 }

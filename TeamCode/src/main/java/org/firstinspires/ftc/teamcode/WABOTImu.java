@@ -35,6 +35,7 @@ public class WABOTImu {
         imu.initialize(parameters);
     }
 
+    // NOTE: ACTIVATE THIS AFTER HITTING START, NOT BEFORE
     public void activate(){
         imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
     }
