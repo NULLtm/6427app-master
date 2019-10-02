@@ -27,8 +27,9 @@ public class WABOTHardware {
         FRMotor = hardwareMap.get(DcMotor.class, "FRMotor");
         BLMotor = hardwareMap.get(DcMotor.class, "BLMotor");
         BRMotor = hardwareMap.get(DcMotor.class, "BRMotor");
-        //leftLatch = hardwareMap.get(Servo.class, "leftLatch");
-        //rightLatch = hardwareMap.get(Servo.class, "rightLatch");
+        leftLatch = hardwareMap.get(Servo.class, "leftLatch");
+        rightLatch = hardwareMap.get(Servo.class, "rightLatch");
+
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery

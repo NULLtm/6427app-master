@@ -122,8 +122,8 @@ public class PWABOTAutonomous extends LinearOpMode {
 
     // Actual instructions for robot! All autonomous code goes here!!!
     private void run(){
-        while (opModeIsActive()) {
-            driveStraight(0, 0.5);
+        while(opModeIsActive()){
+            driveStraight(0, 0.5f);
         }
     }
 
@@ -367,12 +367,12 @@ public class PWABOTAutonomous extends LinearOpMode {
         }
 
         int difference = targetHeading - heading;
-        double power = difference/90.0;
+        double power = difference/10.0;
 
-        h.FLMotor.setPower(startSpeed + power);
-        h.FRMotor.setPower(startSpeed - power);
-        h.BLMotor.setPower(startSpeed + power);
-        h.BRMotor.setPower(startSpeed - power);
+        h.FLMotor.setPower(startSpeed - power);
+        h.FRMotor.setPower(startSpeed + power);
+        h.BLMotor.setPower(startSpeed - power);
+        h.BRMotor.setPower(startSpeed + power);
 
     }
 

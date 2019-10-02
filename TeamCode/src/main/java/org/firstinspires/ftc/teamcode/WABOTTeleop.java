@@ -15,6 +15,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class  WABOTTeleop extends OpMode {
     // Declare OpMode members.
     WABOTHardware h;
+    double left = 0;
+    double right = 0;
 
     // Constant
     private final double PRECISION_SPEED_MODIFIER = 0.5;
@@ -29,6 +31,7 @@ public class  WABOTTeleop extends OpMode {
         h = new WABOTHardware(hardwareMap);
         runEncoder(false);
         telemetry.addData("Status", "Initialized");
+
     }
 
     /*
@@ -61,6 +64,35 @@ public class  WABOTTeleop extends OpMode {
         //}
 
         holoDrive();
+        h.leftLatch.setPosition(left);
+        h.rightLatch.setPosition(right);
+        if(gamepad2.y){
+            left += 0.05;
+
+        }
+        if(gamepad2.a){
+            left -= 0.05;
+        }
+        if(left < 0){
+            left = 0;
+        }
+        if(left > 0.8){
+            left = 0.8;
+        }
+
+        if(gamepad2.b){
+            right += 0.05;
+
+        }
+        if(gamepad2.x){
+            right -= 0.05;
+        }
+        if(right < 0){
+            right = 0;
+        }
+        if(right > 0.8){
+            right = 0.8;
+        }
     }
 
     /*

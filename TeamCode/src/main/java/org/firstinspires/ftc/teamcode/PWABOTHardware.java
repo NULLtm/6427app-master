@@ -32,9 +32,9 @@ public class PWABOTHardware {
         FRMotor = hardwareMap.get(DcMotor.class, "FRMotor");
         BLMotor = hardwareMap.get(DcMotor.class, "BLMotor");
         BRMotor = hardwareMap.get(DcMotor.class, "BRMotor");
-        ods = hardwareMap.get(OpticalDistanceSensor.class, "ods");
-        color = hardwareMap.get(ColorSensor.class, "color");
-        touch = hardwareMap.get(TouchSensor.class, "touch");
+        //ods = hardwareMap.get(OpticalDistanceSensor.class, "ods");
+        //color = hardwareMap.get(ColorSensor.class, "color");
+        //touch = hardwareMap.get(TouchSensor.class, "touch");
         gyro = hardwareMap.get(GyroSensor.class, "gyro");
 
         // Most robots need the motor on one side to be reversed to drive forward
