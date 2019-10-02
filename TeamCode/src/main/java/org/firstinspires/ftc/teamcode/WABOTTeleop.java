@@ -66,33 +66,26 @@ public class  WABOTTeleop extends OpMode {
         holoDrive();
         h.leftLatch.setPosition(left);
         h.rightLatch.setPosition(right);
-        if(gamepad2.y){
+        if(gamepad2.y && left <= 0.8){
             left += 0.05;
-
         }
-        if(gamepad2.a){
+        if(gamepad2.a && left >= 0){
             left -= 0.05;
         }
-        if(left < 0){
-            left = 0;
-        }
-        if(left > 0.8){
-            left = 0.8;
-        }
 
-        if(gamepad2.b){
+        if(gamepad2.b && right <= 0.8){
             right += 0.05;
 
         }
-        if(gamepad2.x){
+        if(gamepad2.x && right >= 0){
             right -= 0.05;
         }
-        if(right < 0){
-            right = 0;
-        }
-        if(right > 0.8){
-            right = 0.8;
-        }
+        
+        h.leftIntake.setPower(gamepad2.left_stick_y);
+        h.rightIntake.setPower(gamepad2.right_stick_y);
+
+        telemetry.addData("Right Position: ", right);
+        telemetry.addData("Left Position: ", left);
     }
 
     /*

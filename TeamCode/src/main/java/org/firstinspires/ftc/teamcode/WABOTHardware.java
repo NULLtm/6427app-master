@@ -14,6 +14,8 @@ public class WABOTHardware {
     public DcMotor BRMotor;
     public Servo leftLatch;
     public Servo rightLatch;
+    public DcMotor rightIntake;
+    public DcMotor leftIntake;
 
     protected WABOTHardware(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -29,6 +31,8 @@ public class WABOTHardware {
         BRMotor = hardwareMap.get(DcMotor.class, "BRMotor");
         leftLatch = hardwareMap.get(Servo.class, "leftLatch");
         rightLatch = hardwareMap.get(Servo.class, "rightLatch");
+        rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
+        leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
 
 
         // Most robots need the motor on one side to be reversed to drive forward
