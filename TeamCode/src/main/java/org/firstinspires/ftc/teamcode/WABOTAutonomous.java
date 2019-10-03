@@ -84,7 +84,7 @@ public class WABOTAutonomous extends LinearOpMode {
         telemetry.addLine("Status: Initializing Vuforia");
         telemetry.update();
 
-        vuforia = new WABOTVuforia(VUFORIA_KEY, CAMERA_DIRECTION, hardwareMap, true);
+        //vuforia = new WABOTVuforia(VUFORIA_KEY, CAMERA_DIRECTION, hardwareMap, true);
 
         //telemetry.addLine("Status: Calibrating Gyro");
         //telemetry.update();
@@ -95,7 +95,7 @@ public class WABOTAutonomous extends LinearOpMode {
         //    // Left blank
         //}
 
-        vuforia.activate();
+        //vuforia.activate();
 
         telemetry.addLine("Status: READY!");
         telemetry.update();
@@ -122,6 +122,70 @@ public class WABOTAutonomous extends LinearOpMode {
 
     // Actual instructions for robot! All autonomous code goes here!!!
     private void run(){
+        h.leftLatch.setPosition(0);
+
+        telemetry.addLine("0");
+        telemetry.update();
+
+        sleep(2000);
+
+        h.leftLatch.setPosition(0.1);
+        telemetry.addLine("0.1");
+        telemetry.update();
+
+        sleep(2000);
+
+        h.leftLatch.setPosition(0.2);
+        telemetry.addLine("0.2");
+        telemetry.update();
+
+        sleep(2000);
+
+        h.leftLatch.setPosition(0.3);
+        telemetry.addLine("0.3");
+        telemetry.update();
+
+        sleep(2000);
+
+        h.leftLatch.setPosition(0.4);
+        telemetry.addLine("0.4");
+        telemetry.update();
+
+        sleep(2000);
+
+        h.leftLatch.setPosition(0.5);
+        telemetry.addLine("0.5");
+        telemetry.update();
+
+        sleep(2000);
+
+        h.leftLatch.setPosition(0.6);
+        telemetry.addLine("0.6");
+        telemetry.update();
+
+        sleep(2000);
+
+        h.leftLatch.setPosition(0.7);
+        telemetry.addLine("0.7");
+        telemetry.update();
+
+        sleep(2000);
+
+        h.leftLatch.setPosition(0.8);
+        telemetry.addLine("0.8");
+        telemetry.update();
+
+        sleep(2000);
+
+        h.leftLatch.setPosition(0.9);
+        telemetry.addLine("0.9");
+        telemetry.update();
+
+        sleep(2000);
+
+        h.leftLatch.setPosition(1);
+        telemetry.addLine("1");
+        telemetry.update();
     }
 
 

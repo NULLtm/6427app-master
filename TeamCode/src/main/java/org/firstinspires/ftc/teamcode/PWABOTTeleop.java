@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class PWABOTTeleop extends OpMode {
 
     public PWABOTHardware h;
+    public boolean runEncoder = false;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -54,6 +55,16 @@ public class PWABOTTeleop extends OpMode {
     @Override
     public void loop(){
         tankDrive();
+
+        telemetry.addData("Encoder Value: ", h.FLMotor.getCurrentPosition());
+
+        if(gamepad1.a && !runEncoder){
+            runEncoder = true;
+            runEncoder(true);
+        } else if (gamepad1.a && runEncoder){
+            runEncoder = false;
+            runEncoder(false);
+        }
     }
 
     /*
