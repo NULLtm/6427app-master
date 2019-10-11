@@ -15,8 +15,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class  WABOTTeleop extends OpMode {
     // Declare OpMode members.
     WABOTHardware h;
-    double left = 1;
-    double right = 0;
+    double left = 0;
+    double right = 1;
+    int times = 0;
+    int iL = 0, iR = 10;
+    double[] pos = {0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
 
     // Constant
     private final double PRECISION_SPEED_MODIFIER = 0.5;
@@ -69,19 +72,23 @@ public class  WABOTTeleop extends OpMode {
         // SERVO RANGE: LEFT: 0.0 (CLOSED) - 0.6 RIGHT: 1.0 (CLOSED) - 0.4
         telemetry.addData("Right Position: ", right);
         telemetry.addData("Left Position: ", left);
-        telemetry.update();
-
-        telemetry.addData("input y: ", gamepad2.left_stick_y);
+        telemetry.addData("Times pressed", times);
         telemetry.update();
 
         holoDrive();
-        h.leftLatch.setPosition(left);
-        h.rightLatch.setPosition(right);
-        if(gamepad2.left_bumper){
-            left += 0.1;
+        h.leftLatch.setPosition(pos[iL]);
+        h.rightLatch.setPosition(pos[iR]);
+        if(gamepad2.start){
+            times++;
         }
-        if(gamepad2.left_bumper){
-            left -= 0.1;
+
+        gamepad2.start = false;
+        if(gamepad2.right_stick_button){
+            //iR--;
+        }
+        if(gamepad2.x){
+            left = 1.0;
+            right = 0.4;
         }
 
         h.leftIntake.setPower(gamepad2.left_stick_y);

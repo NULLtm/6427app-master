@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -10,12 +11,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 /**
- * OFFICIAL AUTONOMOUS CODE
+ * UNOFFICIAL ROBO ARM CODE
  *
  * WRIGHT ANGLE ROBOTICS (Skystone 2019-2020)
  *
  * Contributor:
- * Owen Boseley (2016-2021)
+ * Cedar Olsen (2016-2022)
+ * Reed Kregenow (2016-2022)
  *
  * NOTES:
  * - Anything marked with the comment (// DO NOT TOUCH) should not be touched xD
@@ -23,9 +25,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  *
  */
 
-
-@Autonomous(name="WABOTAutonomous", group="WABOT")
-public class WABOTAutonomous extends LinearOpMode {
+@Disabled
+@Autonomous(name="ArmOpMode", group="PWABOT")
+public class ArmOpMode extends LinearOpMode {
 
 
     // This provides the tick count for each rotation of an encoder, it's helpful for using run to position
@@ -84,20 +86,22 @@ public class WABOTAutonomous extends LinearOpMode {
         telemetry.addLine("Status: Hardware Map");
         telemetry.update();
 
-        runEncoder(true);
+        runEncoder(false);
 
         h.leftLatch.setPosition(0.8f);
         h.rightLatch.setPosition(0.3f);
-        h.foundServo.setPosition(0.9f);
+        h.foundServo.setPosition(0.7f);
 
         telemetry.addLine("Status: Initializing Vuforia");
         telemetry.update();
 
+        // UNCOMMENT if you want vuforia
         //vuforia = new WABOTVuforia(VUFORIA_KEY, CAMERA_DIRECTION, hardwareMap, true);
 
         //telemetry.addLine("Status: Calibrating Gyro");
         //telemetry.update();
 
+        // UNCOMMENT if you want gyro VVVV
         //h.gyro.calibrate();
 
         //while(h.gyro.isCalibratng()){
@@ -128,24 +132,38 @@ public class WABOTAutonomous extends LinearOpMode {
     // LEFT GOES TO: 0.2 (OPEN) to 0.5 (CLOSED)
     // RIGHT GOES TO: 0 (CLOSED) to 0.3 (OPEN)
     // FOUNDATION: 0 (DOWN) to 0.6? (UP)
+    // Motor Power from -1f to 1f
 
     // Actual instructions for robot! All autonomous code goes here!!!
     private void run(){
-
-        linearDrive(0.2f);
-
-        sleep(8000);
-
+        linearDrive(0.1f);
+        runToPos(10, 0.1f);
         stopMotors();
-
-
-
-        /*runToPos((int)(((CM_PER_FOOT*2) - (CM_PER_INCH*2.5)) + ((CM_PER_FOOT*2) - (CM_PER_INCH*18))), -0.5f);
-        sleep(1000);
-        h.foundServo.setPosition(0);
-        sleep(1000);
-        runToPos((int)(((CM_PER_FOOT*2) - (CM_PER_INCH*2.5)) + ((CM_PER_FOOT*2) - (CM_PER_INCH*18))), 0.5f);*/
+        turn(-1, 0.1f);
+        if (gamepad1.x)  {
+            h.armServo1.setPosition(1);
+        }else {
+            h.armServo1.setPosition(0.5);
+        }
+        if (gamepad1.y)  {
+            h.armServo1.setPosition(0);
+        }else {
+            h.armServo1.setPosition(0.5);
+        }
+        //armServo3 not set to continuous
+        /*if (gamepad1.a)  {
+            h.armServo3.setPosition(1);
+        }else {
+            h.armServo3.setPosition(0.5);
+        }
+        if (gamepad1.b)  {
+            h.armServo3.setPosition(0);
+        }else {
+            h.armServo3.setPosition(0.5);
+        }*/
     }
+
+    // CONTINUOUS SERVO: 0.5 = stop 1.0 = clockwise 0 = counterclockwise
 
 
 
