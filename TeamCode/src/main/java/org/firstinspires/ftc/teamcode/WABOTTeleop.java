@@ -15,11 +15,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class  WABOTTeleop extends OpMode {
     // Declare OpMode members.
     WABOTHardware h;
-    double left = 0;
-    double right = 1;
-    int times = 0;
-    int iL = 0, iR = 10;
-    double[] pos = {0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
+    float intakePow = 0;
+
+    boolean normalS = true;
 
     // Constant
     private final double PRECISION_SPEED_MODIFIER = 0.5;
@@ -32,8 +30,8 @@ public class  WABOTTeleop extends OpMode {
         final double PRECISION_SPEED_MODIFIER = 0.5;
         // Tell the driver that initialization is complete.
         h = new WABOTHardware(hardwareMap);
-        h.leftLatch.setPosition(0);
-        h.rightLatch.setPosition(1);
+        h.leftLatch.setPosition(0.3f);
+        h.rightLatch.setPosition(0.9f);
         runEncoder(false);
         telemetry.addData("Status", "Initialized");
 
@@ -59,40 +57,31 @@ public class  WABOTTeleop extends OpMode {
      */
     @Override
     public void loop() {
-        //if(gamepad2.dpad_down){
-        //    h.leftLatch.setPosition(0.8);
-        //    h.rightLatch.setPosition(0.8);
-        //}
-        //if(gamepad2.dpad_up){
-        //    h.leftLatch.setPosition(0);
-        //    h.rightLatch.setPosition(0);
-        //}
-
-
-        // SERVO RANGE: LEFT: 0.0 (CLOSED) - 0.6 RIGHT: 1.0 (CLOSED) - 0.4
-        telemetry.addData("Right Position: ", right);
-        telemetry.addData("Left Position: ", left);
-        telemetry.addData("Times pressed", times);
-        telemetry.update();
-
         holoDrive();
-        h.leftLatch.setPosition(pos[iL]);
-        h.rightLatch.setPosition(pos[iR]);
-        if(gamepad2.start){
-            times++;
+
+        telemetry.addData("Trigger Left", gamepad2.left_trigger);
+
+        if(gamepad2.right_trigger > 0){
+            intakePow = gamepad2.right_trigger;
+        }else if(gamepad2.left_trigger > 0){
+            intakePow = -gamepad2.left_trigger;
+        } else {
+            intakePow = 0;
         }
 
-        gamepad2.start = false;
-        if(gamepad2.right_stick_button){
-            //iR--;
-        }
-        if(gamepad2.x){
-            left = 1.0;
-            right = 0.4;
+        h.leftIntake.setPower(intakePow);
+        h.rightIntake.setPower(intakePow);
+
+        // IMPORTANT: Ideal servo pos for intake: LEFT: 0.4 RIGHT: 0.5
+        if(gamepad2.a){
+            h.leftLatch.setPosition(0.4f);
+            h.rightLatch.setPosition(0.5f);
         }
 
-        h.leftIntake.setPower(gamepad2.left_stick_y);
-        h.rightIntake.setPower(gamepad2.right_stick_y);
+        if(gamepad2.b){
+            h.leftLatch.setPosition(0.3f);
+            h.rightLatch.setPosition(0.9f);
+        }
 
     }
 
@@ -108,7 +97,7 @@ public class  WABOTTeleop extends OpMode {
         h.BLMotor.setPower(0);
         h.BRMotor.setPower(0);
     }
-
+// RIGHT IS IN
     private void runEncoder(boolean withEncoder){
         if(withEncoder) {
             h.FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -144,10 +133,10 @@ public class  WABOTTeleop extends OpMode {
         double rightStickX = -gamepad1.left_stick_x;
         double rightStickY = -gamepad1.right_stick_y;
 
-        double r = Math.hypot(leftStickX, leftStickY);
-        double robotAngle = Math.atan2(leftStickY, leftStickX) - (Math.PI / 4);
-        double rightX = rightStickX;
-        double turn = rightX;
+        double r = Math.hypot(rightStickX, rightStickY);
+        double robotAngle = Math.atan2(rightStickY, rightStickX) - (Math.PI / 4);
+        double leftX = leftStickX;
+        double turn = leftX;
 
         double v1 = r * Math.cos(robotAngle) + turn;
         double v2 = r * Math.sin(robotAngle) - turn;

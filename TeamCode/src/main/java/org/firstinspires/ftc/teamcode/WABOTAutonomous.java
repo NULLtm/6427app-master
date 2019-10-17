@@ -88,7 +88,7 @@ public class WABOTAutonomous extends LinearOpMode {
 
         h.leftLatch.setPosition(0.8f);
         h.rightLatch.setPosition(0.3f);
-        h.foundServo.setPosition(0.9f);
+        h.foundServo.setPosition(0.5f);
 
         telemetry.addLine("Status: Initializing Vuforia");
         telemetry.update();
@@ -118,28 +118,35 @@ public class WABOTAutonomous extends LinearOpMode {
 
 
 
+    private void motorDir(boolean forward){
+        if(forward){
+            h.BRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            h.BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            h.FRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            h.FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        } else {
+            h.BRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            h.BLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            h.FRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            h.FLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        }
+    }
 
 
 
 
 
-
-
-    // LEFT GOES TO: 0.2 (OPEN) to 0.5 (CLOSED)
-    // RIGHT GOES TO: 0 (CLOSED) to 0.3 (OPEN)
-    // FOUNDATION: 0 (DOWN) to 0.6? (UP)
+    // LEFT GOES TO: 0.3 (OPEN) to 0.8 (CLOSED)
+    // RIGHT GOES TO: 0.3 (CLOSED) to 0.9 (OPEN)
+    // FOUNDATION: 0 (DOWN) to 0.5 (UP)
 
     // Actual instructions for robot! All autonomous code goes here!!!
     private void run(){
 
-        linearDrive(0.2f);
-
-        sleep(8000);
-
-        stopMotors();
-
-
-
+        h.leftLatch.setPosition(0.3f);
+        h.rightLatch.setPosition(0.9f);
+        h.foundServo.setPosition(0f);
+        sleep(3000);
         /*runToPos((int)(((CM_PER_FOOT*2) - (CM_PER_INCH*2.5)) + ((CM_PER_FOOT*2) - (CM_PER_INCH*18))), -0.5f);
         sleep(1000);
         h.foundServo.setPosition(0);
@@ -203,6 +210,13 @@ public class WABOTAutonomous extends LinearOpMode {
     // DO NOT TOUCH
     // Robot moves some distance (CM) with a specified power applied
     private void runToPos(int distanceCM, float power){
+
+        if(power < 0){
+            power *= -1;
+            motorDir(false);
+        } else if(power < 0.001 && power > -0.001){
+            return;
+        }
         double revs = distanceCM/CIRCUMFERENCE;
         int ticksToRun = (int)(revs * ENCODER_TICK);
         runEncoder(true);
@@ -224,6 +238,7 @@ public class WABOTAutonomous extends LinearOpMode {
         }
         stopMotors();
         runEncoder(false);
+        motorDir(true);
     }
 
 
