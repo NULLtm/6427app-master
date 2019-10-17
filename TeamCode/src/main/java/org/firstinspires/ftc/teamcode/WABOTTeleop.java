@@ -127,6 +127,26 @@ public class  WABOTTeleop extends OpMode {
         h.BRMotor.setPower(rightStickY);
     }
 
+    private void owenDrive(){
+        double leftStickX = -gamepad1.right_stick_x;
+        double leftStickY = gamepad1.left_stick_y;
+        double rightStickX = -gamepad1.left_stick_x;
+        double rightStickY = -gamepad1.right_stick_y;
+
+        double r = Math.hypot(rightStickX, rightStickY);
+        double robotAngle = Math.atan2(rightStickY, rightStickX);
+
+        double v1 = 0.5 + r * Math.cos(robotAngle);
+        double v2 = 0.5 - r * Math.cos(robotAngle);
+        double v3 = 0.5 + r * Math.cos(robotAngle);
+        double v4 = 0.5 - r * Math.cos(robotAngle);
+
+        h.FLMotor.setPower(v1);
+        h.FRMotor.setPower(v2);
+        h.BLMotor.setPower(v3);
+        h.BRMotor.setPower(v4);
+    }
+
     private void holoDrive(){
         double leftStickX = -gamepad1.right_stick_x;
         double leftStickY = gamepad1.left_stick_y;
