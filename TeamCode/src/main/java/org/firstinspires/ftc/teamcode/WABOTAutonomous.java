@@ -120,15 +120,15 @@ public class WABOTAutonomous extends LinearOpMode {
 
     private void motorDir(boolean forward){
         if(forward){
-            h.BRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-            h.BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            h.FRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-            h.FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        } else {
             h.BRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             h.BLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
             h.FRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             h.FLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        } else {
+            h.BRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            h.BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            h.FRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            h.FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
     }
 
@@ -142,16 +142,11 @@ public class WABOTAutonomous extends LinearOpMode {
 
     // Actual instructions for robot! All autonomous code goes here!!!
     private void run(){
-
-        h.leftLatch.setPosition(0.3f);
-        h.rightLatch.setPosition(0.9f);
-        h.foundServo.setPosition(0f);
-        sleep(3000);
-        /*runToPos((int)(((CM_PER_FOOT*2) - (CM_PER_INCH*2.5)) + ((CM_PER_FOOT*2) - (CM_PER_INCH*18))), -0.5f);
+        runToPos((int)(((CM_PER_FOOT*2) - (CM_PER_INCH*2.5)) + ((CM_PER_FOOT*2) - (CM_PER_INCH*18))), -0.5f);
         sleep(1000);
         h.foundServo.setPosition(0);
         sleep(1000);
-        runToPos((int)(((CM_PER_FOOT*2) - (CM_PER_INCH*2.5)) + ((CM_PER_FOOT*2) - (CM_PER_INCH*18))), 0.5f);*/
+        runToPos((int)(((CM_PER_FOOT*2) - (CM_PER_INCH*2.5)) + ((CM_PER_FOOT*2) - (CM_PER_INCH*18))), 0.5f);
     }
 
 

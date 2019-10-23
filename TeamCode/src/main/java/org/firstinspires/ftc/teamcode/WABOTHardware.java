@@ -20,6 +20,8 @@ public class WABOTHardware {
     public Servo armServo1;
     public Servo armServo2;
     public Servo armServo3;
+    public Servo testServo;
+    public DcMotor armMotor;
 
     protected WABOTHardware(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -38,16 +40,18 @@ public class WABOTHardware {
         rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         foundServo = hardwareMap.get(Servo.class, "foundServo");
-       // armServo1 = hardwareMap.get(Servo.class, "armServo1");
-       // armServo2 = hardwareMap.get(Servo.class, "armServo2");
-       // armServo3 = hardwareMap.get(Servo.class, "armServo3");
+        //testServo = hardwareMap.get(Servo.class, "testServo");
+        armServo1 = hardwareMap.get(Servo.class, "armServo1");
+        armServo2 = hardwareMap.get(Servo.class, "armServo2");
+        armServo3 = hardwareMap.get(Servo.class, "armServo3");
+        armMotor = hardwareMap.get(DcMotor.class, "armMotor");
 
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        BRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        FRMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        BRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        BLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        FRMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        FLMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 }
