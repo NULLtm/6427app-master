@@ -35,13 +35,8 @@ public class  WABOTTeleop extends OpMode {
         final double PRECISION_SPEED_MODIFIER = 0.5;
         // Tell the driver that initialization is complete.
         h = new WABOTHardware(hardwareMap);
-        h.leftLatch.setPosition(0.3f);
-        h.rightLatch.setPosition(0.9f);
-        h.foundServo.setPosition(0.5f);
         runEncoder(false);
         telemetry.addData("Status", "Initialized");
-
-
     }
 
     /*
@@ -56,7 +51,12 @@ public class  WABOTTeleop extends OpMode {
      */
     @Override
     public void start() {
-
+        h.leftLatch.setPosition(0.3);
+        h.rightLatch.setPosition(0.9);
+        h.foundServo.setPosition(0.5);
+        h.armServo1.setPosition(0);
+        h.armServo2.setPosition(0);
+        h.armServo3.setPosition(0.5);
     }
 
     /*
@@ -64,12 +64,8 @@ public class  WABOTTeleop extends OpMode {
      */
     @Override
     public void loop() {
-        holoDrive2();
-        controllerTwo();
-
-
-
-
+        holoDrive();
+        input();
     }
 
     /*
@@ -86,7 +82,11 @@ public class  WABOTTeleop extends OpMode {
     }
 
 
-    private void controllerTwo(){
+    // Swing Arm: (OPEN) 1 - 0 (Down)
+    // END arm: (UP) 1 - 0 (DOWN)
+    // Middle Servo: 0 = (IN) 1 = (OUT)
+
+    private void input(){
         /* ~~~INTAKE~~~ */
         if(gamepad2.right_trigger > 0){
             intakePow = gamepad2.right_trigger;
@@ -117,43 +117,28 @@ public class  WABOTTeleop extends OpMode {
 
         motorPos += gamepad2.right_stick_y;
 
-        as1 += 0.005 * gamepad2.left_stick_x;
-        as2 += 0.005 * gamepad2.left_stick_y;
+        if(gamepad2.dpad_left){
+            as1 = 0.3;
+        }
+        if(gamepad2.dpad_right){
+            as1 = 1;
+        }
+
+        as2 += 0.002 * -gamepad2.left_stick_y;
         as3 += 0.005 * gamepad2.right_stick_x;
 
-        as1 = clamp(0.2, 0.8, as1);
+        as1 = clamp(0.3, 1, as1);
         as2 = clamp(0, 1, as2);
         as3 = clamp(0, 1, as3);
 
         h.armServo1.setPosition(as1);
         h.armServo2.setPosition(as2);
-        //h.armServo3.setPosition(as3);
+        h.armServo3.setPosition(as3);
 
         telemetry.addData("Motor Position: ", motorPos);
-
-//        if(gamepad2.dpad_down){
-//            as1 += 0.1;
-//        }
-//        if(gamepad2.dpad_up){
-//            as1 -= 0.1;
-//        }
-//
-//        if(gamepad2.dpad_left){
-//           as2 += 0.1;
-//        }
-//
-//        if(gamepad2.dpad_right){
-//            as2 -= 0.1;
-//        }
-//
-//        if(gamepad2.left_bumper){
-//            as3 += 0.1;
-//        }
-//        if(gamepad2.right_bumper){
-//            as3 -= 0.1;
-//        }
-
-        /* ~~~END Output~~~ */
+        telemetry.addData("Middle: ", as1);
+        telemetry.addData("Swing: ", as2);
+        telemetry.addData("End: ", as3);
     }
 // RIGHT IS IN
     private void runEncoder(boolean withEncoder){
@@ -185,69 +170,16 @@ public class  WABOTTeleop extends OpMode {
         h.BRMotor.setPower(rightStickY);
     }
 
-    private void owenDrive(){
-        double leftStickX = -gamepad1.right_stick_x;
-        double leftStickY = gamepad1.left_stick_y;
-        double rightStickX = -gamepad1.left_stick_x;
-        double rightStickY = -gamepad1.right_stick_y;
-
-        double r = Math.hypot(rightStickX, rightStickY);
-        double robotAngle = Math.atan2(rightStickY, rightStickX);
-
-        double v1 = rightStickY + r * Math.cos(robotAngle);
-        double v2 = rightStickY - r * Math.sin(robotAngle);
-        double v3 = rightStickY + r * Math.sin(robotAngle);
-        double v4 = rightStickY - r * Math.cos(robotAngle);
-
-        if(gamepad1.right_bumper || gamepad1.left_bumper){
-            v1 = v1 * PRECISION_SPEED_MODIFIER;
-            v2 = v2 * PRECISION_SPEED_MODIFIER;
-            v3 = v3 * PRECISION_SPEED_MODIFIER;
-            v4 = v4 * PRECISION_SPEED_MODIFIER;
-        }
-        h.FLMotor.setPower(v1);
-        h.FRMotor.setPower(v2);
-        h.BLMotor.setPower(v3);
-        h.BRMotor.setPower(v4);
-    }
-
     private void holoDrive(){
-        double leftStickX = -gamepad1.right_stick_x;
+        double leftStickX = gamepad1.right_stick_x;
         double leftStickY = gamepad1.left_stick_y;
-        double rightStickX = -gamepad1.left_stick_x;
+        double rightStickX = gamepad1.left_stick_x;
         double rightStickY = -gamepad1.right_stick_y;
 
         double r = Math.hypot(rightStickX, rightStickY);
         double robotAngle = Math.atan2(rightStickY, rightStickX) - (Math.PI / 4);
         double leftX = leftStickX;
         double turn = leftX;
-
-        double v1 = r * Math.cos(robotAngle) + turn;
-        double v2 = r * Math.sin(robotAngle) - turn;
-        double v3 = r * Math.sin(robotAngle) + turn;
-        double v4 = r * Math.cos(robotAngle) - turn;
-
-        if(gamepad1.right_bumper || gamepad1.left_bumper){
-            v1 = v1 * PRECISION_SPEED_MODIFIER;
-            v2 = v2 * PRECISION_SPEED_MODIFIER;
-            v3 = v3 * PRECISION_SPEED_MODIFIER;
-            v4 = v4 * PRECISION_SPEED_MODIFIER;
-        }
-        h.FLMotor.setPower(v1);
-        h.FRMotor.setPower(v2);
-        h.BLMotor.setPower(v3);
-        h.BRMotor.setPower(v4);
-    }
-
-    private void holoDrive2(){
-        double leftStickX = gamepad1.left_stick_x;
-        double leftStickY = gamepad1.right_stick_y;
-        double rightStickX = gamepad1.right_stick_x;
-        double rightStickY = -gamepad1.left_stick_y;
-
-        double r = Math.hypot(leftStickX, rightStickY);
-        double robotAngle = Math.atan2(rightStickY, leftStickX) - (Math.PI / 4);
-        double turn = rightStickX;
 
         double v1 = r * Math.cos(robotAngle) + turn;
         double v2 = r * Math.sin(robotAngle) - turn;
